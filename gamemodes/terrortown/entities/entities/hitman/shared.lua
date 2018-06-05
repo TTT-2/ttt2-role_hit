@@ -5,33 +5,35 @@ if SERVER then
 	resource.AddFile("materials/vgui/ttt/sprite_hit.vmt")
 end
 
--- important to add roles with this function,
--- because it does more than just access the array ! e.g. updating other arrays
-AddCustomRole("HITMAN", { -- first param is access for ROLES array => ROLES["HITMAN"] or ROLES["HITMAN"]
-	color = Color(255, 51, 51, 255), -- ...
-	dkcolor = Color(255, 51, 51, 255), -- ...
-	bgcolor = Color(255, 51, 51, 200), -- ...
-	name = "hitman", -- just a unique name for the script to determine
-	printName = "Hitman", -- The text that is printed to the player, e.g. in role alert
-	abbr = "hit", -- abbreviation
-	team = TEAM_TRAITOR, -- the team name: roles with same team name are working together
-	visibleForTraitors = true, -- other traitors can see this role / sync them with traitors
-	shop = true,
-	defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
-    surviveBonus = 0.5, -- bonus multiplier for every survive while another player was killed
-    scoreKillsMultiplier = 5, -- multiplier for kill of player of another team
-    scoreTeamKillsMultiplier = -16, -- multiplier for teamkill
-    --showOnConfirm = true -- shows the player on death to each client (e.g. on scoreboard)
-	preventFindCredits = true,
-	preventKillCredits = true
-}, {
-    pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-    maximum = 1, -- maximum amount of roles in a round
-    minPlayers = 6, -- minimum amount of players until this role is able to get selected
-    togglable = true, -- option to toggle a role for a client if possible (F1 menu)
-	random = 50,
-	shopFallback = SHOP_FALLBACK_TRAITOR
-})
+hook.Add("Initialize", "TTT2InitCRoleHit", function()
+	-- important to add roles with this function,
+	-- because it does more than just access the array ! e.g. updating other arrays
+	AddCustomRole("HITMAN", { -- first param is access for ROLES array => ROLES["HITMAN"] or ROLES["HITMAN"]
+		color = Color(255, 51, 51, 255), -- ...
+		dkcolor = Color(255, 51, 51, 255), -- ...
+		bgcolor = Color(255, 51, 51, 200), -- ...
+		name = "hitman", -- just a unique name for the script to determine
+		printName = "Hitman", -- The text that is printed to the player, e.g. in role alert
+		abbr = "hit", -- abbreviation
+		team = TEAM_TRAITOR, -- the team name: roles with same team name are working together
+		visibleForTraitors = true, -- other traitors can see this role / sync them with traitors
+		shop = true,
+		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
+		surviveBonus = 0.5, -- bonus multiplier for every survive while another player was killed
+		scoreKillsMultiplier = 5, -- multiplier for kill of player of another team
+		scoreTeamKillsMultiplier = -16, -- multiplier for teamkill
+		--showOnConfirm = true -- shows the player on death to each client (e.g. on scoreboard)
+		preventFindCredits = true,
+		preventKillCredits = true
+	}, {
+		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
+		maximum = 1, -- maximum amount of roles in a round
+		minPlayers = 6, -- minimum amount of players until this role is able to get selected
+		togglable = true, -- option to toggle a role for a client if possible (F1 menu)
+		random = 50,
+		shopFallback = SHOP_FALLBACK_TRAITOR
+	})
+end)
 
 -- if sync of roles has finished
 hook.Add("TTT2_FinishedSync", "HitmanInitT", function(ply, first)

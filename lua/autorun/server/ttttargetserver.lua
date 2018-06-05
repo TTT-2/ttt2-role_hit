@@ -11,8 +11,8 @@ local TargetPly = {}
 local CreditPercent = {}
 
 -- convars
-local CredBon = CreateConVar("ttt_target_credit_bonus", "0.5", FCVAR_SERVER_CAN_EXECUTE, "The credit bonus given when a Traitor kills his target. (0.1-1) Def: 0.5")
-local ChatReveal = CreateConVar("ttt_target_chatreveal", "0", FCVAR_SERVER_CAN_EXECUTE, "Enables or disables if the Traitor should be revealed if he killed nontarget. Def: 0")
+local CredBon = CreateConVar("ttt_target_credit_bonus", "2", FCVAR_SERVER_CAN_EXECUTE, "The credit bonus given when a Traitor kills his target. (Def: 2)")
+local ChatReveal = CreateConVar("ttt_target_chatreveal", "0", FCVAR_SERVER_CAN_EXECUTE, "Enables or disables if the Traitor should be revealed if he killed nontarget (Def: 0)")
 
 local RoundIsActive = false
 
@@ -45,18 +45,21 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetDeal", function(ply, inflictor, at
 				CreditPercent[attacker] = 0
 			end
 			
-			local val = math.min(math.max(math.floor(CredBon:GetFloat() * 10) / 10, 0), 1)
+			local val = CredBon:GetFloat()
+			local valInt = CredBon:GetInt()
 
 			CreditPercent[attacker] = CreditPercent[attacker] + val
+			
+			local cr = CreditPercent[attacker]
 
 			if val > 0 then 
-				if CreditPercent[attacker] >= 1 then
-					attacker:AddCredits(1)
+				if cr >= 1 then
+					attacker:AddCredits(cr - val + valInt)
 
-					CreditPercent[attacker] = CreditPercent[attacker] - 1
+					CreditPercent[attacker] = CreditPercent[attacker] - valInt
 
 					net.Start("TTTTargetChatDeal")
-					net.WriteString("You recived one credit by killing your target. (Credit Parts: " .. CreditPercent[attacker] .. ")")
+					net.WriteString("You received " .. (cr - val + valInt) .. " credit(s) by killing your target.")
 					net.Send(attacker)
 				else
 					net.Start("TTTTargetChatDeal")
