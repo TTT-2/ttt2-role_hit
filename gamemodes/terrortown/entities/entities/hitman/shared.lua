@@ -22,7 +22,6 @@ hook.Add("Initialize", "TTT2InitCRoleHit", function()
 		surviveBonus = 0.5, -- bonus multiplier for every survive while another player was killed
 		scoreKillsMultiplier = 5, -- multiplier for kill of player of another team
 		scoreTeamKillsMultiplier = -16, -- multiplier for teamkill
-		--showOnConfirm = true -- shows the player on death to each client (e.g. on scoreboard)
 		preventFindCredits = true,
 		preventKillCredits = true
 	}, {
@@ -74,10 +73,8 @@ end)
     
 if SERVER then
 	hook.Add("TTT2CheckCreditAward", "TTT2HitmanSpecialCreditReward", function(victim, attacker)
-		if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActiveRole(ROLES.HITMAN.index) and not victim:IsTeamMember(attacker) then
-			if victim == attacker.targetPlayer then
-				attacker:AddCredits(1)
-			end
+		if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActiveRole(ROLES.HITMAN.index) then
+			return false -- prevent awards
 		end
 	end)
 	

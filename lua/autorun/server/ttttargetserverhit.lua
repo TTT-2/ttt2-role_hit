@@ -1,8 +1,8 @@
 -- Please ask me if you want to use parts of this code!
 -- Add network
-util.AddNetworkString("TTTTargetDeal")
-util.AddNetworkString("TTTTargetChatDeal")
-util.AddNetworkString("TTTTargetChatRevealDeal")
+util.AddNetworkString("TTTTargetHit")
+util.AddNetworkString("TTTTargetChatHit")
+util.AddNetworkString("TTTTargetChatRevealHit")
 
 -- Default Values and Tables
 local Targets = {}
@@ -18,15 +18,12 @@ local RoundIsActive = false
 
 -- select Targets
 local function GetTargets()
-	local Players = player.GetAll()
 	local Targets = {}
-	local i2 = 1
 
-	for i = 1, #Players, 1 do
-		if Players[i]:IsValid() and not Players[i]:IsSpec() and Players[i]:IsTerror() and Players[i]:Alive() and Players[i].GetRole and Players[i]:GetRole() and not Players[i]:HasTeamRole(TEAM_TRAITOR) then
-			if Players[i]:GetRole() ~= ROLES.JESTER.index then
-				Targets[i2] = Players[i]
-				i2 = i2 + 1
+	for _, ply in ipairs(player.GetAll()) do
+		if ply:IsValid() and not ply:IsSpec() and ply:IsTerror() and ply:Alive() and ply.GetRole and ply:GetRole() and not ply:HasTeamRole(TEAM_TRAITOR) then
+			if ply:GetRole() ~= ROLES.JESTER.index then
+				table.insert(Targets, ply)
 			end
 		end
 	end
@@ -35,7 +32,7 @@ local function GetTargets()
 end
 
 -- Player dies Hook
-hook.Add("PlayerDeath", "PlayerDeath4TTTTargetDeal", function(ply, inflictor, attacker)
+hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, attacker)
 	if not ROLES then return end
 	
 	if Targets and Target then
@@ -58,25 +55,25 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetDeal", function(ply, inflictor, at
 
 					CreditPercent[attacker] = CreditPercent[attacker] - valInt
 
-					net.Start("TTTTargetChatDeal")
+					net.Start("TTTTargetChatHit")
 					net.WriteString("You received " .. (cr - val + valInt) .. " credit(s) by killing your target.")
 					net.Send(attacker)
 				else
-					net.Start("TTTTargetChatDeal")
+					net.Start("TTTTargetChatHit")
 					net.WriteString("You killed your target. (Credit Parts: " .. CreditPercent[attacker] .. ")")
 					net.Send(attacker)
 				end
 			else
-				net.Start("TTTTargetChatDeal")
+				net.Start("TTTTargetChatHit")
 				net.WriteString("You killed your target.")
 				net.Send(attacker)
 			end
 		elseif ChatReveal:GetBool() and attacker:HasTeamRole(TEAM_TRAITOR) then -- Reveal Traitors
-			net.Start("TTTTargetChatRevealDeal")
+			net.Start("TTTTargetChatRevealHit")
 			net.WriteString(attacker:GetName())
 			net.Broadcast()
 		elseif TargetPly[ply] then -- info Textmessage
-			net.Start("TTTTargetChatDeal")
+			net.Start("TTTTargetChatHit")
 			net.WriteString("Your target died.")
 			net.Send(TargetPly[ply])
 		end
@@ -84,17 +81,17 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetDeal", function(ply, inflictor, at
 end)
 
 -- check if sb dies
-hook.Add("Think", "Think4TTTTargetDeal", function()
+hook.Add("Think", "Think4TTTTargetHit", function()
 	if not ROLES then return end
 	
 	if RoundIsActive then
-		for i = 1, #Targets do
-			if Targets[i] and not (Targets[i]:IsValid() and not Targets[i]:IsSpec() and Targets[i]:IsTerror() and Targets[i]:Alive() and Targets[i].GetRole and Targets[i]:GetRole() and not Targets[i]:HasTeamRole(TEAM_TRAITOR)) then
-				if TargetPly[Targets[i]] then
-					local ply = TargetPly[Targets[i]]
+		for _, target in ipairs(Targets) do
+			if target and not (target:IsValid() and not target:IsSpec() and target:IsTerror() and target:Alive() and target.GetRole and target:GetRole() and not target:HasTeamRole(TEAM_TRAITOR)) then
+				if TargetPly[target] then
+					local ply = TargetPly[target]
 
-					Target[TargetPly[Targets[i]]] = nil
-					TargetPly[Targets[i]] = nil
+					Target[TargetPly[target]] = nil
+					TargetPly[target] = nil
 					Targets = GetTargets()
 
 					if #Targets > 0 then
@@ -103,20 +100,18 @@ hook.Add("Think", "Think4TTTTargetDeal", function()
 						Target[ply] = Data
 						TargetPly[Data] = ply
 
-						net.Start("TTTTargetDeal")
+						net.Start("TTTTargetHit")
 						net.WriteEntity(Target[ply])
 						net.WriteBool(false)
 						net.Send(ply)
 					else
-						net.Start("TTTTargetDeal")
+						net.Start("TTTTargetHit")
 						net.WriteEntity(nil)
 						net.WriteBool(true)
 						net.Send(ply)
 					end
-
-					i = #Targets + 1
 				else
-					Targets[i] = nil
+					target = nil
 				end
 			end
 		end
@@ -124,7 +119,7 @@ hook.Add("Think", "Think4TTTTargetDeal", function()
 end)
 
 -- reset every round
-hook.Add("TTTBeginRound","TTTBeginRound4TTTTargetServerDeal", function()
+hook.Add("TTTBeginRound","TTTBeginRound4TTTTargetServerHit", function()
 	if not ROLES then return end
 	
 	Targets = {}
@@ -135,7 +130,7 @@ hook.Add("TTTBeginRound","TTTBeginRound4TTTTargetServerDeal", function()
 end)
 
 -- reset when round ends
-hook.Add("TTTEndRound", "TTTEndRound4TTTTargetDeal", function(result)
+hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
 	if not ROLES then return end
 	
 	RoundIsActive = false
@@ -146,7 +141,7 @@ hook.Add("TTTEndRound", "TTTEndRound4TTTTargetDeal", function(result)
 end)
 
 -- send Targets
-net.Receive("TTTTargetDeal", function(len, ply)
+net.Receive("TTTTargetHit", function(len, ply)
 	Targets = GetTargets()
 
 	if #Targets > 0 then
@@ -155,12 +150,12 @@ net.Receive("TTTTargetDeal", function(len, ply)
 		Target[ply] = Data
 		TargetPly[Data] = ply
 
-		net.Start("TTTTargetDeal")
+		net.Start("TTTTargetHit")
 		net.WriteEntity(Target[ply])
 		net.WriteBool(false)
 		net.Send(ply)
 	else
-		net.Start("TTTTargetDeal")
+		net.Start("TTTTargetHit")
 		net.WriteEntity(nil)
 		net.WriteBool(true)
 		net.Send(ply)

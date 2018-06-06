@@ -10,7 +10,7 @@ end
 table.insert(TTTFGAddons, "TTT Target for TTT2 HITMAN Role")
 
 -- ConVar for disabling
-local ChatMessage = CreateClientConVar("ttt_fgaddons_textmessage", "1", true, false, "Enables or disables the message in the chat. Def:1")
+local ChatMessage = CreateClientConVar("ttt_fgaddons_textmessage", "1", true, false, "Enables or disables the message in the chat. (Def: 1)")
 
 -- Hook for printing
 hook.Add("TTTBeginRound", "TTTBeginRound4TTTFGAddons", function()
@@ -40,19 +40,19 @@ local KeySelected2 = ""
 local GetLang
 
 -- request Targets
-hook.Add("TTT2_RoleTypeSet", "TTTBeginRound4TTTTargetClientDeal", function()
+hook.Add("TTT2_RoleTypeSet", "TTTBeginRound4TTTTargetClientHit", function()
 	if not ROLES then return end
 	
 	local ply = LocalPlayer()
 
-	if ply:IsValid() and not ply:IsSpec() and ply.IsTerror and ply:IsTerror() and ply:Alive() and ply:GetRole() == ROLES.HITMAN.index then
-		net.Start("TTTTargetDeal")
+	if IsValid(ply) and not ply:IsSpec() and ply:IsActive() and ply:GetRole() == ROLES.HITMAN.index then
+		net.Start("TTTTargetHit")
 		net.SendToServer()
 	end
 end)
 
 -- Receive Targets
-net.Receive("TTTTargetDeal", function(len)
+net.Receive("TTTTargetHit", function(len)
 	Target = net.ReadEntity()
 	GetLang = GetLang or LANG.GetUnsafeLanguageTable
 	
@@ -74,13 +74,13 @@ net.Receive("TTTTargetDeal", function(len)
 end)
 
 -- Chat Messages
-net.Receive("TTTTargetChatRevealDeal", function()
+net.Receive("TTTTargetChatRevealHit", function()
 	local Text = net.ReadString()
 	
 	chat.AddText("TTT Target: ", Color(255, 0, 0), Text, Color(255, 255, 255), " is HITMAN. (Revealed because he killed a nontarget)")
 end)
 
-net.Receive("TTTTargetChatDeal", function()
+net.Receive("TTTTargetChatHit", function()
 	local Text = net.ReadString()
 	
 	chat.AddText("TTT Target: ", Color(255, 255, 255), Text)
@@ -165,7 +165,7 @@ local function HUD(name, xPos, yPos, alignment, ColorA, ColorB, value, maximum)
 	draw.SimpleText(name, "TabLarge", x + 194, y - 17, Color(255, 255, 255))
 end
 -- Painting of the HUD
-hook.Add("HUDPaint", "HUDPaint4TTTTargetDeal", function()
+hook.Add("HUDPaint", "HUDPaint4TTTTargetHit", function()
 	if not ROLES then return end
 	
 	if not TEAM_SPEC then return end
@@ -236,7 +236,7 @@ local function DefaultVI()
 end
 
 -- Settings Hook
-hook.Add("TTTSettingsTabs", "TTTTarget4TTTSettingsTabsDeal", function(dtabs)
+hook.Add("TTTSettingsTabs", "TTTTarget4TTTSettingsTabsHit", function(dtabs)
 	if not ROLES then return end
 	
 	local ply = LocalPlayer()
