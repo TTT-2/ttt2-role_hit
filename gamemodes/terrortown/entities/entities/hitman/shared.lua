@@ -23,7 +23,8 @@ hook.Add("Initialize", "TTT2InitCRoleHit", function()
 		scoreKillsMultiplier = 5, -- multiplier for kill of player of another team
 		scoreTeamKillsMultiplier = -16, -- multiplier for teamkill
 		preventFindCredits = true,
-		preventKillCredits = true
+		preventKillCredits = true,
+		preventDefaultCredits = true
 	}, {
 		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
 		maximum = 1, -- maximum amount of roles in a round
@@ -100,14 +101,5 @@ else
 		local client = LocalPlayer()
 		
 		target:SetCustomClass(class)
-	end)
-
-	-- modify roles table of rolesetup addon
-	hook.Add("TTTAModifyRolesTable", "ModifyRoleHitToTraitor", function(rolesTable)
-		for role in pairs(rolesTable) do
-			if role == ROLES.HITMAN.index then
-				roles[ROLE_INNOCENT] = roles[ROLE_INNOCENT] + roles[ROLES.HITMAN.index]
-			end
-		end
 	end)
 end

@@ -40,7 +40,7 @@ local KeySelected2 = ""
 local GetLang
 
 -- request Targets
-hook.Add("TTT2_RoleTypeSet", "TTTBeginRound4TTTTargetClientHit", function()
+function SetHitTarget()
 	if not ROLES then return end
 	
 	local ply = LocalPlayer()
@@ -49,7 +49,11 @@ hook.Add("TTT2_RoleTypeSet", "TTTBeginRound4TTTTargetClientHit", function()
 		net.Start("TTTTargetHit")
 		net.SendToServer()
 	end
-end)
+end
+
+hook.Add("TTT2_RoleTypeSet", "T3SetR4T3TarClHit", SetHitTarget)
+
+hook.Add("TTTBeginRound", "T3BegR4T3TarClHit", SetHitTarget)
 
 -- Receive Targets
 net.Receive("TTTTargetHit", function(len)
@@ -164,6 +168,7 @@ local function HUD(name, xPos, yPos, alignment, ColorA, ColorB, value, maximum)
 	
 	draw.SimpleText(name, "TabLarge", x + 194, y - 17, Color(255, 255, 255))
 end
+
 -- Painting of the HUD
 hook.Add("HUDPaint", "HUDPaint4TTTTargetHit", function()
 	if not ROLES then return end

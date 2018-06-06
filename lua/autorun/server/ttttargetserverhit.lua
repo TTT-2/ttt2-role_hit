@@ -1,3 +1,5 @@
+AddCSLuaFile("autorun/client/ttttargetclienthit.lua")
+
 -- Please ask me if you want to use parts of this code!
 -- Add network
 util.AddNetworkString("TTTTargetHit")
@@ -14,28 +16,26 @@ local CreditPercent = {}
 local CredBon = CreateConVar("ttt_target_credit_bonus", "2", FCVAR_SERVER_CAN_EXECUTE, "The credit bonus given when a Traitor kills his target. (Def: 2)")
 local ChatReveal = CreateConVar("ttt_target_chatreveal", "0", FCVAR_SERVER_CAN_EXECUTE, "Enables or disables if the Traitor should be revealed if he killed nontarget (Def: 0)")
 
-local RoundIsActive = false
-
 -- select Targets
 local function GetTargets()
-	local Targets = {}
+	local targets = {}
 
 	for _, ply in ipairs(player.GetAll()) do
-		if ply:IsValid() and not ply:IsSpec() and ply:IsTerror() and ply:Alive() and ply.GetRole and ply:GetRole() and not ply:HasTeamRole(TEAM_TRAITOR) then
-			if ply:GetRole() ~= ROLES.JESTER.index then
-				table.insert(Targets, ply)
+		if IsValid(ply) and not ply:IsSpec() and ply:IsActive() and ply.GetRole and ply:GetRole() and not ply:HasTeamRole(TEAM_TRAITOR) then
+			if not ROLES.JESTER or ply:GetRole() ~= ROLES.JESTER.index then
+				table.insert(targets, ply)
 			end
 		end
 	end
 
-	return Targets
+	return targets
 end
 
 -- Player dies Hook
 hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, attacker)
 	if not ROLES then return end
 	
-	if Targets and Target then
+	if Target then
 		if Target[attacker] == ply then -- if attacker's target is the dead player
 			-- Credit management + info Text
 			if not CreditPercent[attacker] then
@@ -84,13 +84,11 @@ end)
 hook.Add("Think", "Think4TTTTargetHit", function()
 	if not ROLES then return end
 	
-	if RoundIsActive then
+	if GetRoundState() == ROUND_ACTIVE then
 		for _, target in ipairs(Targets) do
-			if target and not (target:IsValid() and not target:IsSpec() and target:IsTerror() and target:Alive() and target.GetRole and target:GetRole() and not target:HasTeamRole(TEAM_TRAITOR)) then
-				if TargetPly[target] then
-					local ply = TargetPly[target]
-
-					Target[TargetPly[target]] = nil
+			if not target or not IsValid(target) or target:IsSpec() or not target:IsTerror() or not target:Alive() or not target.GetRole or not target:GetRole() or target:HasTeamRole(TEAM_TRAITOR) then
+				local ply = TargetPly[target]
+				if ply then
 					TargetPly[target] = nil
 					Targets = GetTargets()
 
@@ -101,39 +99,29 @@ hook.Add("Think", "Think4TTTTargetHit", function()
 						TargetPly[Data] = ply
 
 						net.Start("TTTTargetHit")
-						net.WriteEntity(Target[ply])
+						net.WriteEntity(Data)
 						net.WriteBool(false)
 						net.Send(ply)
 					else
+						Target[ply] = nil
+					
 						net.Start("TTTTargetHit")
 						net.WriteEntity(nil)
 						net.WriteBool(true)
 						net.Send(ply)
 					end
-				else
-					target = nil
+					
+					break
 				end
 			end
 		end
 	end
 end)
 
--- reset every round
-hook.Add("TTTBeginRound","TTTBeginRound4TTTTargetServerHit", function()
-	if not ROLES then return end
-	
-	Targets = {}
-	CreditPercent = {}
-	Target = {}
-	TargetPly = {}
-	RoundIsActive = true
-end)
-
 -- reset when round ends
 hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
 	if not ROLES then return end
 	
-	RoundIsActive = false
 	Targets = {}
 	CreditPercent = {}
 	Target = {}
@@ -143,6 +131,8 @@ end)
 -- send Targets
 net.Receive("TTTTargetHit", function(len, ply)
 	Targets = GetTargets()
+	
+	PrintTable(Targets)
 
 	if #Targets > 0 then
 		local Data = Targets[math.random(1, #Targets)]
@@ -151,7 +141,7 @@ net.Receive("TTTTargetHit", function(len, ply)
 		TargetPly[Data] = ply
 
 		net.Start("TTTTargetHit")
-		net.WriteEntity(Target[ply])
+		net.WriteEntity(Data)
 		net.WriteBool(false)
 		net.Send(ply)
 	else
