@@ -13,11 +13,9 @@ hook.Add("Initialize", "TTT2InitCRoleHit", function()
 		dkcolor = Color(255, 51, 51, 255), -- ...
 		bgcolor = Color(255, 51, 51, 200), -- ...
 		name = "hitman", -- just a unique name for the script to determine
-		printName = "Hitman", -- The text that is printed to the player, e.g. in role alert
 		abbr = "hit", -- abbreviation
 		team = TEAM_TRAITOR, -- the team name: roles with same team name are working together
 		visibleForTraitors = true, -- other traitors can see this role / sync them with traitors
-		shop = true,
 		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
 		surviveBonus = 0.5, -- bonus multiplier for every survive while another player was killed
 		scoreKillsMultiplier = 5, -- multiplier for kill of player of another team

@@ -36,43 +36,53 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, att
 	if not ROLES then return end
 	
 	if Target then
-		if Target[attacker] == ply then -- if attacker's target is the dead player
-			-- Credit management + info Text
-			if not CreditPercent[attacker] then
-				CreditPercent[attacker] = 0
-			end
-			
-			local val = CredBon:GetFloat()
-			local valInt = CredBon:GetInt()
+		local b = true
+	
+		if IsValid(attacker) and attacker:IsPlayer() and attacker:GetRole() == ROLES.HITMAN.index then
+			if Target[attacker] == ply then -- if attacker's target is the dead player
+				-- Credit management + info Text
+				if not CreditPercent[attacker] then
+					CreditPercent[attacker] = 0
+				end
+				
+				local val = CredBon:GetFloat()
+				local valInt = CredBon:GetInt()
 
-			CreditPercent[attacker] = CreditPercent[attacker] + val
-			
-			local cr = CreditPercent[attacker]
+				CreditPercent[attacker] = CreditPercent[attacker] + val
+				
+				local cr = CreditPercent[attacker]
 
-			if val > 0 then 
-				if cr >= 1 then
-					attacker:AddCredits(cr - val + valInt)
+				if val > 0 then 
+					if cr >= 1 then
+						attacker:AddCredits(cr - val + valInt)
 
-					CreditPercent[attacker] = CreditPercent[attacker] - valInt
+						CreditPercent[attacker] = CreditPercent[attacker] - valInt
 
-					net.Start("TTTTargetChatHit")
-					net.WriteString("You received " .. (cr - val + valInt) .. " credit(s) by killing your target.")
-					net.Send(attacker)
+						net.Start("TTTTargetChatHit")
+						net.WriteString("You received " .. (cr - val + valInt) .. " credit(s) by killing your target.")
+						net.Send(attacker)
+					else
+						net.Start("TTTTargetChatHit")
+						net.WriteString("You killed your target. (Credit Parts: " .. CreditPercent[attacker] .. ")")
+						net.Send(attacker)
+					end
 				else
 					net.Start("TTTTargetChatHit")
-					net.WriteString("You killed your target. (Credit Parts: " .. CreditPercent[attacker] .. ")")
+					net.WriteString("You killed your target.")
 					net.Send(attacker)
 				end
-			else
-				net.Start("TTTTargetChatHit")
-				net.WriteString("You killed your target.")
-				net.Send(attacker)
+				
+				b = false
+			elseif ChatReveal:GetBool() then -- Reveal Hitman
+				net.Start("TTTTargetChatRevealHit")
+				net.WriteString(attacker:GetName())
+				net.Broadcast()
+				
+				b = false
 			end
-		elseif ChatReveal:GetBool() and attacker:HasTeamRole(TEAM_TRAITOR) then -- Reveal Traitors
-			net.Start("TTTTargetChatRevealHit")
-			net.WriteString(attacker:GetName())
-			net.Broadcast()
-		elseif TargetPly[ply] then -- info Textmessage
+		end
+		
+		if b and TargetPly[ply] then -- info Textmessage
 			net.Start("TTTTargetChatHit")
 			net.WriteString("Your target died.")
 			net.Send(TargetPly[ply])
