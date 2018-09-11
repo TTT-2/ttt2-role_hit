@@ -163,5 +163,10 @@ net.Receive("TTTTargetHit", function(len, ply)
 			net.WriteBool(true)
 			net.Send(ply)
 		end
+	else
+		net.Start("TTTTargetHit")
+		net.Write(Target[ply])
+		net.WriteBool(false)
+		net.Send(ply)
 	end
 end)
