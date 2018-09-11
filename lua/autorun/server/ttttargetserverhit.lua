@@ -82,7 +82,7 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, att
 			end
 		end
 		
-		if b and TargetPly[ply] then -- info Textmessage
+		if b and TargetPly[ply] and Target[TargetPly[ply]] == ply then -- info Textmessage
 			net.Start("TTTTargetChatHit")
 			net.WriteString("Your target died.")
 			net.Send(TargetPly[ply])
@@ -98,7 +98,7 @@ hook.Add("Think", "Think4TTTTargetHit", function()
 		for _, target in ipairs(Targets) do
 			if not target or not IsValid(target) or target:IsSpec() or not target:IsTerror() or not target:Alive() or not target.GetRole or not target:GetRole() or target:HasTeamRole(TEAM_TRAITOR) then
 				local ply = TargetPly[target]
-				if ply then
+				if ply and Target[ply] == target then
 					TargetPly[target] = nil
 					Targets = GetTargets()
 
@@ -122,6 +122,8 @@ hook.Add("Think", "Think4TTTTargetHit", function()
 					end
 					
 					break
+				elseif ply and Target[ply] ~= target then
+					TargetPly[target] = nil
 				end
 			end
 		end
@@ -140,24 +142,26 @@ end)
 
 -- send Targets
 net.Receive("TTTTargetHit", function(len, ply)
-	Targets = GetTargets()
-	
-	PrintTable(Targets)
+	if not Target[ply] then
+		Targets = GetTargets()
 
-	if #Targets > 0 then
-		local Data = Targets[math.random(1, #Targets)]
+		PrintTable(Targets)
 
-		Target[ply] = Data
-		TargetPly[Data] = ply
+		if #Targets > 0 then
+			local Data = Targets[math.random(1, #Targets)]
 
-		net.Start("TTTTargetHit")
-		net.WriteEntity(Data)
-		net.WriteBool(false)
-		net.Send(ply)
-	else
-		net.Start("TTTTargetHit")
-		net.WriteEntity(nil)
-		net.WriteBool(true)
-		net.Send(ply)
+			Target[ply] = Data
+			TargetPly[Data] = ply
+
+			net.Start("TTTTargetHit")
+			net.WriteEntity(Data)
+			net.WriteBool(false)
+			net.Send(ply)
+		else
+			net.Start("TTTTargetHit")
+			net.WriteEntity(nil)
+			net.WriteBool(true)
+			net.Send(ply)
+		end
 	end
 end)
