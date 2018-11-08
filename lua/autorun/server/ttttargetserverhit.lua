@@ -73,7 +73,7 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, att
 				end
 
 				b = false
-			elseif ChatReveal:GetBool() then -- Reveal Hitman
+			elseif ChatReveal:GetBool() and not ply == attacker then -- Reveal Hitman
 				net.Start("TTTTargetChatRevealHit")
 				net.WriteString(attacker:GetName())
 				net.Broadcast()
