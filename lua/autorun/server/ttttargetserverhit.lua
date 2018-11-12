@@ -145,8 +145,6 @@ net.Receive("TTTTargetHit", function(len, ply)
 	if not Target[ply] then
 		Targets = GetTargets()
 
-		PrintTable(Targets)
-
 		if #Targets > 0 then
 			local Data = Targets[math.random(1, #Targets)]
 
