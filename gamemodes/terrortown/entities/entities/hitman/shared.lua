@@ -19,7 +19,8 @@ InitCustomRole("HITMAN", { -- first param is access for ROLES array => ROLES["HI
 		scoreKillsMultiplier = 5, -- multiplier for kill of player of another team
 		scoreTeamKillsMultiplier = -16, -- multiplier for teamkill
 		preventFindCredits = true,
-		preventKillCredits = true
+		preventKillCredits = true,
+		preventTraitorAloneCredits = true
 	}, {
 		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
 		maximum = 1, -- maximum amount of roles in a round
