@@ -38,7 +38,7 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, att
 	if Target then
 		local b = true
 
-		if IsValid(attacker) and attacker:IsPlayer() and attacker:GetSubRole() == ROLE_HITMAN then
+		if IsValid(attacker) and attacker:IsPlayer() and attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) then
 			if Target[attacker] == ply then -- if attacker's target is the dead player
 				-- Credit management + info Text
 				if not CreditPercent[attacker] then
@@ -82,7 +82,7 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, att
 			end
 		end
 
-		if b and TargetPly[ply] and Target[TargetPly[ply]] == ply then -- info Textmessage
+		if b and (not ply.IsGhost or not ply:IsGhost()) and TargetPly[ply] and Target[TargetPly[ply]] == ply then -- info Textmessage
 			net.Start("TTTTargetChatHit")
 			net.WriteString("Your target died.")
 			net.Send(TargetPly[ply])
