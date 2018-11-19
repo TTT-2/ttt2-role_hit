@@ -47,7 +47,7 @@ function SetHitTarget()
 	end
 end
 
-hook.Add("TTT2RoleTypeSet", "T3SetR4T3TarClHit", SetHitTarget)
+hook.Add("TTT2UpdateSubrole", "T3SetR4T3TarClHit", SetHitTarget)
 
 hook.Add("TTTBeginRound", "T3BegR4T3TarClHit", SetHitTarget)
 

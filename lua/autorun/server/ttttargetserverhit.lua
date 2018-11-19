@@ -23,7 +23,7 @@ local function GetTargets()
 	for _, ply in ipairs(player.GetAll()) do
 		if IsValid(ply) and not ply:IsSpec() and ply:IsActive() and ply.GetSubRole and ply:GetSubRole() and not ply:HasTeam(TEAM_TRAITOR) and (
 			not ROLE_JESTER or ply:GetSubRole() ~= ROLE_JESTER
-		) then
+		) and ply:GetBaseRole() ~= ROLE_DETECTIVE then
 			table.insert(targets, ply)
 		end
 	end
