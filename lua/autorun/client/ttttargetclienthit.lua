@@ -125,6 +125,8 @@ local function HUD(name, xP, yP, al, ColorA, ColorB, value, maximum)
 		y = ScrH() - yP
 	end
 
+	if not hook.Run("HUDShouldDraw", "TTT2HitmanMarker", name, x, y, ColorA, ColorB, value, maximum) then return end
+
 	-- Drawing
 	draw.RoundedBox(8, x - 5, y - 10, 250, 60, Color(0, 0, 0, 200))
 	draw.RoundedBox(8, x + 4, y + 4, 232, 27, ColorB)
