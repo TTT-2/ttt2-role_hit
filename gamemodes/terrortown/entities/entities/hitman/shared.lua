@@ -1,16 +1,15 @@
 if SERVER then
 	AddCSLuaFile()
 
-	resource.AddFile("materials/vgui/ttt/icon_hit.vmt")
-	resource.AddFile("materials/vgui/ttt/sprite_hit.vmt")
+	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_hit.vmt")
 end
 
 -- important to add roles with this function,
 -- because it does more than just access the array ! e.g. updating other arrays
 InitCustomRole("HITMAN", { -- first param is access for ROLES array => ROLES["HITMAN"] or ROLES.HITMAN or HITMAN
-		color = Color(255, 51, 51, 255), -- ...
-		dkcolor = Color(178, 0, 0, 255), -- ...
-		bgcolor = Color(41, 204, 41, 255), -- ...
+		color = Color(240, 96, 72, 255), -- ...
+		dkcolor = Color(172, 35, 13, 255), -- ...
+		bgcolor = Color(53, 177, 90, 255), -- ...
 		abbr = "hit", -- abbreviation
 		defaultTeam = TEAM_TRAITOR, -- the team name: roles with same team name are working together
 		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
