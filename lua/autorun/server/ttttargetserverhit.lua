@@ -31,10 +31,7 @@ local function GetTargets()
 	return targets
 end
 
--- Player dies Hook
-hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, attacker)
-	if not TTT2 then return end
-
+local function HitmanDeathHook(ply, inflictor, attacker)
 	if Target then
 		local b = true
 
@@ -88,12 +85,9 @@ hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", function(ply, inflictor, att
 			net.Send(TargetPly[ply])
 		end
 	end
-end)
+end
 
--- check if sb dies
-hook.Add("Think", "Think4TTTTargetHit", function()
-	if not TTT2 then return end
-
+local function HitmanThink()
 	if GetRoundState() == ROUND_ACTIVE then
 		for _, target in ipairs(Targets) do
 			if not target or not IsValid(target) or target:IsSpec() or not target:IsTerror() or not target:Alive() or not target.GetSubRole or not target:GetSubRole() or target:HasTeam(TEAM_TRAITOR) then
@@ -128,7 +122,7 @@ hook.Add("Think", "Think4TTTTargetHit", function()
 			end
 		end
 	end
-end)
+end
 
 -- reset when round ends
 hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
@@ -166,5 +160,20 @@ net.Receive("TTTTargetHit", function(len, ply)
 		net.WriteEntity(Target[ply])
 		net.WriteBool(false)
 		net.Send(ply)
+	end
+end)
+
+local h_Think = "Think4TTTTargetHit"
+local h_PlayerDeath = "PlayerDeath4TTTTargetHit"
+
+hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooksSV", function(roleData, state)
+	if roleData == HITMAN then
+		if state then
+			hook.Add("Think", h_Think, HitmanThink)
+			hook.Add("PlayerDeath", h_PlayerDeath, HitmanDeathHook)
+		else
+			hook.Remove("Think", h_Think)
+			hook.Remove("PlayerDeath", h_PlayerDeath)
+		end
 	end
 end)

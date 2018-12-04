@@ -37,8 +37,6 @@ local KeySelected2 = ""
 
 -- request Targets
 function SetHitTarget()
-	if not TTT2 then return end
-
 	local ply = LocalPlayer()
 
 	if IsValid(ply) and not ply:IsSpec() and ply:IsActive() and ply:GetSubRole() == ROLE_HITMAN then
@@ -46,10 +44,6 @@ function SetHitTarget()
 		net.SendToServer()
 	end
 end
-
-hook.Add("TTT2UpdateSubrole", "T3SetR4T3TarClHit", SetHitTarget)
-
-hook.Add("TTTBeginRound", "T3BegR4T3TarClHit", SetHitTarget)
 
 -- Receive Targets
 net.Receive("TTTTargetHit", function(len)
@@ -161,25 +155,6 @@ local function HUD(name, xP, yP, al, ColorA, ColorB, value, maximum)
 	draw.SimpleText(name, "TabLarge", x + 194, y - 17, Color(255, 255, 255))
 end
 
--- Painting of the HUD
-hook.Add("HUDPaint", "HUDPaint4TTTTargetHit", function()
-	if not TTT2 or not TEAM_SPEC then return end
-
-	local ply = LocalPlayer()
-
-	--colors
-	if PreviewRendering:GetBool() then
-		HUD("TARGET", xPos, yPos, alignment, Color(55, 55, 55, 255), Color(0, 0, 0, 255), "Target", 0)
-	else
-		local clA = CLA or Color(55, 55, 55, 255)
-		local clB = CLB or Color(0, 0, 0, 255)
-
-		if ply.Alive and ply:Alive() and ply:IsTerror() and not ply:IsSpec() and ply.GetSubRole and ply:GetSubRole() and ply:GetSubRole() == ROLE_HITMAN then
-			HUD("TARGET", xPos, yPos, alignment, clA, clB, PrintTarget, 0)
-		end
-	end
-end)
-
 -- Settings
 -- Presets
 local function DefaultI()
@@ -230,10 +205,7 @@ local function DefaultVI()
 	Key_box2:SetValue("Bottom, left")
 end
 
--- Settings Hook
-hook.Add("TTTSettingsTabs", "TTTTarget4TTTSettingsTabsHit", function(dtabs)
-	if not TTT2 then return end
-
+local function HitmanSettings(dtabs)
 	local ply = LocalPlayer()
 
 	if not IsValid(ply) or not ply.GetSubRole or ply:GetSubRole() ~= ROLE_HITMAN then return end
@@ -366,4 +338,43 @@ hook.Add("TTTSettingsTabs", "TTTTarget4TTTSettingsTabsHit", function(dtabs)
 	Version_text:SetColor(Color(100, 100, 100))
 
 	settings_panel:AddItem(Version_text)
+end
+
+local function HitmanHud()
+	if not TEAM_SPEC then return end
+
+	local ply = LocalPlayer()
+
+	--colors
+	if PreviewRendering:GetBool() then
+		HUD("TARGET", xPos, yPos, alignment, Color(55, 55, 55, 255), Color(0, 0, 0, 255), "Target", 0)
+	else
+		local clA = CLA or Color(55, 55, 55, 255)
+		local clB = CLB or Color(0, 0, 0, 255)
+
+		if ply.Alive and ply:Alive() and ply:IsTerror() and not ply:IsSpec() and ply.GetSubRole and ply:GetSubRole() and ply:GetSubRole() == ROLE_HITMAN then
+			HUD("TARGET", xPos, yPos, alignment, clA, clB, PrintTarget, 0)
+		end
+	end
+end
+
+local h_TTT2UpdateSubrole = "T3SetR4T3TarClHit"
+local h_TTTBeginRound = "T3BegR4T3TarClHit"
+local h_HUDPaint = "HUDPaint4TTTTargetHit"
+local h_TTTSettingsTabs = "TTTTarget4TTTSettingsTabsHit"
+
+hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooksCL", function(roleData, state)
+	if roleData == HITMAN then
+		if state then
+			hook.Add("TTT2UpdateSubrole", h_TTT2UpdateSubrole, SetHitTarget)
+			hook.Add("TTTBeginRound", h_TTTBeginRound, SetHitTarget)
+			hook.Add("TTTSettingsTabs", h_TTTSettingsTabs, HitmanSettings)
+			hook.Add("HUDPaint", h_HUDPaint, HitmanHud)
+		else
+			hook.Remove("TTT2UpdateSubrole", h_TTT2UpdateSubrole)
+			hook.Remove("TTTBeginRound", h_TTTBeginRound)
+			hook.Remove("TTTSettingsTabs", h_TTTSettingsTabs)
+			hook.Remove("HUDPaint", h_HUDPaint)
+		end
+	end
 end)

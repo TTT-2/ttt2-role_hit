@@ -2,6 +2,9 @@ if SERVER then
 	AddCSLuaFile()
 
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_hit.vmt")
+
+	-- if there is TTTC installed: sync classes
+	util.AddNetworkString("TTT2HitmanSyncClasses")
 end
 
 -- important to add roles with this function,
@@ -62,28 +65,42 @@ Er kann nur Credits sammeln indem er sein Ziel tötet.]])
 	end
 end)
 
-if SERVER then
-	hook.Add("TTT2CheckCreditAward", "TTT2HitmanSpecialCreditReward", function(victim, attacker)
-		if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActive() and attacker:GetSubRole() == ROLE_HITMAN then
-			return false -- prevent awards
-		end
-	end)
+local h_TTT2CheckCreditAward = "TTT2HitmanSpecialCreditReward"
+local h_TTTCPostReceiveCustomClasses = "TTT2HitmanCanSeeClasses"
 
-	-- if there is TTTC installed: sync classes
-	util.AddNetworkString("TTT2HitmanSyncClasses")
-	hook.Add("TTTCPostReceiveCustomClasses", "TTT2HitmanCanSeeClasses", function()
-		for _, hitman in ipairs(player.GetAll()) do
-			if hitman:IsActive() and hitman:GetSubRole() == ROLE_HITMAN then
-				for _, ply in ipairs(player.GetAll()) do
-					net.Start("TTT2HitmanSyncClasses")
-					net.WriteEntity(ply)
-					net.WriteUInt(ply:GetCustomClass() - 1, CLASS_BITS)
-					net.Send(hitman)
-				end
+hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooks", function(roleData, state)
+	if roleData == HITMAN then
+		if state then
+			if SERVER then
+				hook.Add("TTT2CheckCreditAward", h_TTT2CheckCreditAward, function(victim, attacker)
+					if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActive() and attacker:GetSubRole() == ROLE_HITMAN then
+						return false -- prevent awards
+					end
+				end)
+
+				hook.Add("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses, function()
+					for _, hitman in ipairs(player.GetAll()) do
+						if hitman:IsActive() and hitman:GetSubRole() == ROLE_HITMAN then
+							for _, ply in ipairs(player.GetAll()) do
+								net.Start("TTT2HitmanSyncClasses")
+								net.WriteEntity(ply)
+								net.WriteUInt(ply:GetCustomClass() - 1, CLASS_BITS)
+								net.Send(hitman)
+							end
+						end
+					end
+				end)
+			end
+		else
+			if SERVER then
+				hook.Remove("TTT2CheckCreditAward", h_TTT2CheckCreditAward)
+				hook.Remove("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses)
 			end
 		end
-	end)
-else
+	end
+end)
+
+if CLIENT then
 	net.Receive("TTT2HitmanSyncClasses", function(len)
 		local target = net.ReadEntity()
 		local class = net.ReadUInt(CLASS_BITS) + 1
