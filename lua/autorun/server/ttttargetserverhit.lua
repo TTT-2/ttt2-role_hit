@@ -134,6 +134,33 @@ hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
 	TargetPly = {}
 end)
 
+hook.Add("TTT2UpdateSubrole", "TargetRoleChanged", function(ply, old, new)
+	if TargetPly[ply] and TargetPly[ply] ~= nil and TargetPly[ply].GetSubRole() == ROLE_HITMAN and new == ROLE_JESTER then
+		hitman = TargetPly[ply]
+		TargetPly[ply] = nil
+		Targets = GetTargets()
+
+		if #Targets > 0 then
+			local Data = Targets[math.random(1, #Targets)]
+
+			Target[hitman] = Data
+			TargetPly[Data] = hitman
+
+			net.Start("TTTTargetHit")
+			net.WriteEntity(Data)
+			net.WriteBool(false)
+			net.Send(hitman)
+		else
+			Target[hitman] = nil
+
+			net.Start("TTTTargetHit")
+			net.WriteEntity(nil)
+			net.WriteBool(true)
+			net.Send(hitman)
+		end
+	end
+end)
+
 -- send Targets
 net.Receive("TTTTargetHit", function(len, ply)
 	if not Target[ply] then
