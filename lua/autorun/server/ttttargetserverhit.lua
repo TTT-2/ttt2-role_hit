@@ -159,7 +159,7 @@ local function HitmanTargetRoleChanged(ply, old, new)
 			net.Send(hitman)
 		end
 	end
-end)
+end
 
 -- send Targets
 net.Receive("TTTTargetHit", function(len, ply)
