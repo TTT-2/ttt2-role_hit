@@ -134,7 +134,7 @@ hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
 	TargetPly = {}
 end)
 
-hook.Add("TTT2UpdateSubrole", "TargetRoleChanged", function(ply, old, new)
+local function HitmanTargetRoleChanged(ply, old, new)
 	if TargetPly[ply] and TargetPly[ply] ~= nil and TargetPly[ply].GetSubRole() == ROLE_HITMAN and new == ROLE_JESTER then
 		hitman = TargetPly[ply]
 		TargetPly[ply] = nil
@@ -192,15 +192,18 @@ end)
 
 local h_Think = "Think4TTTTargetHit"
 local h_PlayerDeath = "PlayerDeath4TTTTargetHit"
+local h_TTT2UpdateSubrole = "TargetRoleChanged"
 
 hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooksSV", function(roleData, state)
 	if roleData == HITMAN then
 		if state then
 			hook.Add("Think", h_Think, HitmanThink)
 			hook.Add("PlayerDeath", h_PlayerDeath, HitmanDeathHook)
+			hook.Add("TTT2UpdateSubrole", h_TTT2UpdateSubrole, HitmanTargetRoleChanged)
 		else
 			hook.Remove("Think", h_Think)
 			hook.Remove("PlayerDeath", h_PlayerDeath)
+			hook.Remove("TTT2UpdateSubrole", h_TTT2UpdateSubrole)
 		end
 	end
 end)
