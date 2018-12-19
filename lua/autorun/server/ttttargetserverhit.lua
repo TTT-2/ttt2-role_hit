@@ -135,7 +135,7 @@ hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
 end)
 
 local function HitmanTargetRoleChanged(ply, old, new)
-	if TargetPly[ply] and TargetPly[ply] ~= nil and TargetPly[ply].GetSubRole() == ROLE_HITMAN and new == ROLE_JESTER then
+	if IsValid(TargetPly[ply]) and TargetPly[ply]:IsPlayer() and TargetPly[ply]:GetSubRole() == ROLE_HITMAN and new == ROLE_JESTER then
 		hitman = TargetPly[ply]
 		TargetPly[ply] = nil
 		Targets = GetTargets()
