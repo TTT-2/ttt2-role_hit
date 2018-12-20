@@ -49,13 +49,9 @@ end
 net.Receive("TTTTargetHit", function(len)
 	Target = net.ReadEntity()
 
-	local Bool = net.ReadBool()
-	if not Bool then
-		if Target:IsActive() then
-			CLA = Target:GetSubRoleData().color
-			CLB = Target:GetSubRoleData().dkcolor
-		end
-
+	if IsValid(Target) and Target:IsPlayer() and Target:IsActive() then
+		CLA = Target:GetSubRoleData().color
+		CLB = Target:GetSubRoleData().dkcolor
 		PrintTarget = Target:GetName()
 	else
 		PrintTarget = " - "

@@ -104,14 +104,12 @@ local function HitmanThink()
 
 						net.Start("TTTTargetHit")
 						net.WriteEntity(Data)
-						net.WriteBool(false)
 						net.Send(ply)
 					else
 						Target[ply] = nil
 
 						net.Start("TTTTargetHit")
 						net.WriteEntity(nil)
-						net.WriteBool(true)
 						net.Send(ply)
 					end
 
@@ -148,14 +146,12 @@ local function HitmanTargetRoleChanged(ply, old, new)
 
 			net.Start("TTTTargetHit")
 			net.WriteEntity(Data)
-			net.WriteBool(false)
 			net.Send(hitman)
 		else
 			Target[hitman] = nil
 
 			net.Start("TTTTargetHit")
 			net.WriteEntity(nil)
-			net.WriteBool(true)
 			net.Send(hitman)
 		end
 	end
@@ -174,18 +170,15 @@ net.Receive("TTTTargetHit", function(len, ply)
 
 			net.Start("TTTTargetHit")
 			net.WriteEntity(Data)
-			net.WriteBool(false)
 			net.Send(ply)
 		else
 			net.Start("TTTTargetHit")
 			net.WriteEntity(nil)
-			net.WriteBool(true)
 			net.Send(ply)
 		end
 	else
 		net.Start("TTTTargetHit")
 		net.WriteEntity(Target[ply])
-		net.WriteBool(false)
 		net.Send(ply)
 	end
 end)
