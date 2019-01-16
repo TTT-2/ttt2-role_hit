@@ -86,6 +86,7 @@ local function HitmanDeathHook(ply, inflictor, attacker)
 		end
 	end
 end
+hook.Add("PlayerDeath", "PlayerDeath4TTTTargetHit", HitmanDeathHook)
 
 local function HitmanThink()
 	if GetRoundState() == ROUND_ACTIVE then
@@ -121,6 +122,7 @@ local function HitmanThink()
 		end
 	end
 end
+hook.Add("Think", "Think4TTTTargetHit", HitmanThink)
 
 -- reset when round ends
 hook.Add("TTTEndRound", "TTTEndRound4TTTTargetHit", function(result)
@@ -156,6 +158,7 @@ local function HitmanTargetRoleChanged(ply, old, new)
 		end
 	end
 end
+hook.Add("TTT2UpdateSubrole", "TargetRoleChanged", HitmanTargetRoleChanged)
 
 -- send Targets
 net.Receive("TTTTargetHit", function(len, ply)
@@ -180,23 +183,5 @@ net.Receive("TTTTargetHit", function(len, ply)
 		net.Start("TTTTargetHit")
 		net.WriteEntity(Target[ply])
 		net.Send(ply)
-	end
-end)
-
-local h_Think = "Think4TTTTargetHit"
-local h_PlayerDeath = "PlayerDeath4TTTTargetHit"
-local h_TTT2UpdateSubrole = "TargetRoleChanged"
-
-hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooksSV", function(roleData, state)
-	if roleData == HITMAN then
-		if state then
-			hook.Add("Think", h_Think, HitmanThink)
-			hook.Add("PlayerDeath", h_PlayerDeath, HitmanDeathHook)
-			hook.Add("TTT2UpdateSubrole", h_TTT2UpdateSubrole, HitmanTargetRoleChanged)
-		else
-			hook.Remove("Think", h_Think)
-			hook.Remove("PlayerDeath", h_PlayerDeath)
-			hook.Remove("TTT2UpdateSubrole", h_TTT2UpdateSubrole)
-		end
 	end
 end)

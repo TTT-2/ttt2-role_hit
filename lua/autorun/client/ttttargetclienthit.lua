@@ -44,6 +44,8 @@ function SetHitTarget()
 		net.SendToServer()
 	end
 end
+hook.Add("TTT2UpdateSubrole", "T3SetR4T3TarClHit", SetHitTarget)
+hook.Add("TTTBeginRound", "T3BegR4T3TarClHit", SetHitTarget)
 
 -- Receive Targets
 net.Receive("TTTTargetHit", function(len)
@@ -335,6 +337,7 @@ local function HitmanSettings(dtabs)
 
 	settings_panel:AddItem(Version_text)
 end
+hook.Add("TTTSettingsTabs", "TTTTarget4TTTSettingsTabsHit", HitmanSettings)
 
 local function HitmanHud()
 	if not TEAM_SPEC then return end
@@ -353,24 +356,4 @@ local function HitmanHud()
 		end
 	end
 end
-
-local h_TTT2UpdateSubrole = "T3SetR4T3TarClHit"
-local h_TTTBeginRound = "T3BegR4T3TarClHit"
-local h_HUDPaint = "HUDPaint4TTTTargetHit"
-local h_TTTSettingsTabs = "TTTTarget4TTTSettingsTabsHit"
-
-hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooksCL", function(roleData, state)
-	if roleData == HITMAN then
-		if state then
-			hook.Add("TTT2UpdateSubrole", h_TTT2UpdateSubrole, SetHitTarget)
-			hook.Add("TTTBeginRound", h_TTTBeginRound, SetHitTarget)
-			hook.Add("TTTSettingsTabs", h_TTTSettingsTabs, HitmanSettings)
-			hook.Add("HUDPaint", h_HUDPaint, HitmanHud)
-		else
-			hook.Remove("TTT2UpdateSubrole", h_TTT2UpdateSubrole)
-			hook.Remove("TTTBeginRound", h_TTTBeginRound)
-			hook.Remove("TTTSettingsTabs", h_TTTSettingsTabs)
-			hook.Remove("HUDPaint", h_HUDPaint)
-		end
-	end
-end)
+hook.Add("HUDPaint", "HUDPaint4TTTTargetHit", HitmanHud)
