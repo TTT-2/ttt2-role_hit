@@ -7,34 +7,35 @@ if SERVER then
 	util.AddNetworkString("TTT2HitmanSyncClasses")
 end
 
--- important to add roles with this function,
--- because it does more than just access the array ! e.g. updating other arrays
-InitCustomRole("HITMAN", { -- first param is access for ROLES array => ROLES["HITMAN"] or ROLES.HITMAN or HITMAN
-		color = Color(240, 96, 72, 255), -- ...
-		dkcolor = Color(172, 35, 13, 255), -- ...
-		bgcolor = Color(53, 177, 90, 255), -- ...
-		abbr = "hit", -- abbreviation
-		defaultTeam = TEAM_TRAITOR, -- the team name: roles with same team name are working together
-		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
-		surviveBonus = 0.5, -- bonus multiplier for every survive while another player was killed
-		scoreKillsMultiplier = 5, -- multiplier for kill of player of another team
-		scoreTeamKillsMultiplier = -16, -- multiplier for teamkill
-		preventFindCredits = true,
-		preventKillCredits = true,
-		preventTraitorAloneCredits = true
-	}, {
-		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-		maximum = 1, -- maximum amount of roles in a round
-		minPlayers = 6, -- minimum amount of players until this role is able to get selected
-		credits = 0, -- the starting credits of a specific role
-		togglable = true, -- option to toggle a role for a client if possible (F1 menu)
-		random = 50,
-		shopFallback = SHOP_FALLBACK_TRAITOR
-})
+ROLE.color = Color(240, 96, 72, 255) -- ...
+ROLE.dkcolor = Color(172, 35, 13, 255) -- ...
+ROLE.bgcolor = Color(53, 177, 90, 255) -- ...
+ROLE.abbr = "hit" -- abbreviation
+ROLE.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
+ROLE.surviveBonus = 0.5 -- bonus multiplier for every survive while another player was killed
+ROLE.scoreKillsMultiplier = 5 -- multiplier for kill of player of another team
+ROLE.scoreTeamKillsMultiplier = -16 -- multiplier for teamkill
+ROLE.preventFindCredits = true
+ROLE.preventKillCredits = true
+ROLE.preventTraitorAloneCredits = true
+
+ROLE.conVarData = {
+	pct = 0.17, -- necessary: percentage of getting this role selected (per player)
+	maximum = 1, -- maximum amount of roles in a round
+	minPlayers = 6, -- minimum amount of players until this role is able to get selected
+	credits = 0, -- the starting credits of a specific role
+	togglable = true, -- option to toggle a role for a client if possible (F1 menu)
+	random = 50,
+	shopFallback = SHOP_FALLBACK_TRAITOR
+}
 
 -- now link this subrole with its baserole
 hook.Add("TTT2BaseRoleInit", "TTT2ConBRTWithHit", function()
-	SetBaseRole(HITMAN, ROLE_TRAITOR)
+	HITMAN:SetBaseRole(ROLE_TRAITOR)
+end)
+
+hook.Add("TTT2RolesLoaded", "AddHitmanTeam", function()
+	HITMAN.defaultTeam = TEAM_TRAITOR
 end)
 
 -- if sync of roles has finished
