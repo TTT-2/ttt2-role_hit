@@ -12,7 +12,7 @@ if SERVER then
 
 		for _, pl in ipairs(player.GetAll()) do
 			if pl:IsActive() and not pl:IsInTeam(ply) then
-				if pl:GetBaseRole() == ROLE_DETECTIVE then
+				if pl:IsRole(ROLE_DETECTIVE) then
 					detes[#detes + 1] = pl
 				else
 					targets[#targets + 1] = pl
@@ -28,7 +28,7 @@ if SERVER then
 	end
 
 	local function SelectNewTarget(ply, targets)
-		targets = targets or GetTargets(ply)
+		targets = GetTargets(ply)
 
 		if #targets > 0 then
 			ply:SetTargetPlayer(targets[math.random(1, #targets)])
