@@ -115,7 +115,7 @@ if SERVER then
 			end
 
 			for _, v in ipairs(player.GetAll()) do
-				if v:GetTargetPlayer() == ply and v:IsActive() and v:GetSubRole() == ROLE_HITMAN and (not v:GetTargetPlayer() or not v:IsGhost()) and v:IsInTeam(ply) then
+				if v:GetTargetPlayer() == ply and v:IsActive() and v:GetSubRole() == ROLE_HITMAN and (not v:GetTargetPlayer() or v.IsGhost and not v:IsGhost()) and v:IsInTeam(ply) then
 					SelectNewTarget(v)
 				end
 			end
