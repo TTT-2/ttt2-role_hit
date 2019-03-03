@@ -118,7 +118,9 @@ end
 hook.Add("PlayerDisconnected", "HitmanTargetDisconnected", HitmanTargetDisconnected)
 
 local function HitmanTargetRoleChanged(ply, old, new)
-	if old == ROLE_HITMAN then
+	if new == ROLE_HITMAN then
+		SelectNewTarget(ply)
+	elseif old == ROLE_HITMAN then
 		ply:SetTargetPlayer(nil)
 	end
 
