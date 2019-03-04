@@ -48,42 +48,40 @@ end
 hook.Add("PlayerDeath", "HitmanTargetChanged", HitmanTargetChanged)
 
 local function HitmanTargetDied(ply)
-	if GetRoundState() == ROUND_ACTIVE then
-		local attacker = ply.targetAttacker
+	local attacker = ply.targetAttacker
 
-		if IsValid(attacker) and attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and IsValid(attacker:GetTargetPlayer()) then
-			if attacker:GetTargetPlayer() == ply then -- if attacker's target is the dead player
-				local val = creditsBonus:GetInt()
-				local text = ""
+	if IsValid(attacker) and attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and attacker:GetTargetPlayer() then
+		if attacker:GetTargetPlayer() == ply then -- if attacker's target is the dead player
+			local val = creditsBonus:GetInt()
+			local text = ""
 
-				if val > 0 and attacker:IsActive() then
-					attacker:AddCredits(val)
+			if val > 0 and attacker:IsActive() then
+				attacker:AddCredits(val)
 
-					text = "You received " .. val .. " credit(s) for eleminating your target."
-				else
-					text = "You've killed your target!"
-				end
+				text = "You received " .. val .. " credit(s) for eleminating your target."
+			else
+				text = "You've killed your target!"
+			end
 
-				attacker:ChatPrint(text)
+			attacker:ChatPrint(text)
 
-				SelectNewTarget(attacker)
-			elseif chatReveal:GetBool() and attacker ~= ply then -- Reveal Sidekick
-				local text = attacker:Nick() .. " is a " .. string.upper(attacker:GetSubRoleData().name) .. "!"
+			SelectNewTarget(attacker)
+		elseif chatReveal:GetBool() and attacker ~= ply then -- Reveal Sidekick
+			local text = attacker:Nick() .. " is a " .. string.upper(attacker:GetSubRoleData().name) .. "!"
 
-				for _, pl in ipairs(player.GetAll()) do
-					pl:ChatPrint(text)
-				end
+			for _, pl in ipairs(player.GetAll()) do
+				pl:ChatPrint(text)
 			end
 		end
+	end
 
-		for _, pl in ipairs(player.GetAll()) do
-			local target = pl:GetTargetPlayer()
+	for _, pl in ipairs(player.GetAll()) do
+		local target = pl:GetTargetPlayer()
 
-			if (not IsValid(attacker) or pl ~= attacker) and (not pl.IsGhost or not pl:IsGhost()) and IsValid(target) and target == ply and pl:GetSubRole() == ROLE_HITMAN then
-				pl:ChatPrint("Your target died...") -- info Textmessage
+		if (not IsValid(attacker) or pl ~= attacker) and (not pl.IsGhost or not pl:IsGhost()) and target == ply and pl:GetSubRole() == ROLE_HITMAN then
+			pl:ChatPrint("Your target died...") -- info Textmessage
 
-				SelectNewTarget(pl)
-			end
+			SelectNewTarget(pl)
 		end
 	end
 end
