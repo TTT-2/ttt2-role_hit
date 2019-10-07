@@ -7,64 +7,61 @@ if SERVER then
 	util.AddNetworkString("TTT2HitmanSyncClasses")
 end
 
-ROLE.color = Color(240, 96, 72, 255) -- ...
-ROLE.dkcolor = Color(172, 35, 13, 255) -- ...
-ROLE.bgcolor = Color(53, 177, 90, 255) -- ...
-ROLE.abbr = "hit" -- abbreviation
-ROLE.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
-ROLE.surviveBonus = 0.5 -- bonus multiplier for every survive while another player was killed
-ROLE.scoreKillsMultiplier = 5 -- multiplier for kill of player of another team
-ROLE.scoreTeamKillsMultiplier = -16 -- multiplier for teamkill
-ROLE.preventFindCredits = true
-ROLE.preventKillCredits = true
-ROLE.preventTraitorAloneCredits = true
+function ROLE:PreInitialize()
+	self.color = Color(240, 96, 72, 255) -- ...
+	self.dkcolor = Color(172, 35, 13, 255) -- ...
+	self.bgcolor = Color(53, 177, 90, 255) -- ...
+	self.abbr = "hit" -- abbreviation
+	self.surviveBonus = 0.5 -- bonus multiplier for every survive while another player was killed
+	self.scoreKillsMultiplier = 5 -- multiplier for kill of player of another team
+	self.scoreTeamKillsMultiplier = -16 -- multiplier for teamkill
+	self.preventFindCredits = true
+	self.preventKillCredits = true
+	self.preventTraitorAloneCredits = true
+	
+	self.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
+	self.defaultTeam = TEAM_TRAITOR
 
-ROLE.conVarData = {
-	pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-	maximum = 1, -- maximum amount of roles in a round
-	minPlayers = 6, -- minimum amount of players until this role is able to get selected
-	credits = 0, -- the starting credits of a specific role
-	togglable = true, -- option to toggle a role for a client if possible (F1 menu)
-	random = 50,
-	shopFallback = SHOP_FALLBACK_TRAITOR
-}
+	self.conVarData = {
+		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
+		maximum = 1, -- maximum amount of roles in a round
+		minPlayers = 6, -- minimum amount of players until this role is able to get selected
+		credits = 0, -- the starting credits of a specific role
+		togglable = true, -- option to toggle a role for a client if possible (F1 menu)
+		random = 50,
+		shopFallback = SHOP_FALLBACK_TRAITOR
+	}
+end
 
 -- now link this subrole with its baserole
-hook.Add("TTT2BaseRoleInit", "TTT2ConBRTWithHit", function()
-	HITMAN:SetBaseRole(ROLE_TRAITOR)
-end)
-
-hook.Add("TTT2RolesLoaded", "AddHitmanTeam", function()
-	HITMAN.defaultTeam = TEAM_TRAITOR
-end)
-
--- if sync of roles has finished
-hook.Add("TTT2FinishedLoading", "HitmanInitT", function()
+function ROLE:Initialize()
+	roles.SetBaseRole(self, ROLE_TRAITOR)
+	
 	if CLIENT then
 		-- setup here is not necessary but if you want to access the role data, you need to start here
 		-- setup basic translation !
-		LANG.AddToLanguage("English", HITMAN.name, "Hitman")
-		LANG.AddToLanguage("English", "info_popup_" .. HITMAN.name, [[You are a Hitman!
+		LANG.AddToLanguage("English", self.name, "Hitman")
+		LANG.AddToLanguage("English", "info_popup_" .. self.name, [[You are a Hitman!
 Try to get some credits!]])
-		LANG.AddToLanguage("English", "body_found_" .. HITMAN.abbr, "This was a Hitman...")
-		LANG.AddToLanguage("English", "search_role_" .. HITMAN.abbr, "This person was a Hitman!")
-		LANG.AddToLanguage("English", "target_" .. HITMAN.name, "Hitman")
-		LANG.AddToLanguage("English", "ttt2_desc_" .. HITMAN.name, [[The Hitman is a Traitor (who works together with the other traitors) and the goal is to kill all other roles except the other traitor roles ^^
+		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "This was a Hitman...")
+		LANG.AddToLanguage("English", "search_role_" .. self.abbr, "This person was a Hitman!")
+		LANG.AddToLanguage("English", "target_" .. self.name, "Hitman")
+		LANG.AddToLanguage("English", "ttt2_desc_" .. self.name, [[The Hitman is a Traitor (who works together with the other traitors) and the goal is to kill all other roles except the other traitor roles ^^
 The Hitman is just able to collect some credits if he kills his target.]])
 
 		---------------------------------
 
 		-- maybe this language as well...
-		LANG.AddToLanguage("Deutsch", HITMAN.name, "Hitman")
-		LANG.AddToLanguage("Deutsch", "info_popup_" .. HITMAN.name, [[Du bist ein Hitman!
+		LANG.AddToLanguage("Deutsch", self.name, "Hitman")
+		LANG.AddToLanguage("Deutsch", "info_popup_" .. self.name, [[Du bist ein Hitman!
 Versuche ein paar Credits zu bekommen!]])
-		LANG.AddToLanguage("Deutsch", "body_found_" .. HITMAN.abbr, "Er war ein Hitman...")
-		LANG.AddToLanguage("Deutsch", "search_role_" .. HITMAN.abbr, "Diese Person war ein Hitman!")
-		LANG.AddToLanguage("Deutsch", "target_" .. HITMAN.name, "Hitman")
-		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. HITMAN.name, [[Der Hitman ist ein Verräter (der mit den anderen Verräter-Rollen zusammenarbeitet) und dessen Ziel es ist, alle anderen Rollen (außer Verräter-Rollen) zu töten ^^
+		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Hitman...")
+		LANG.AddToLanguage("Deutsch", "search_role_" .. self.abbr, "Diese Person war ein Hitman!")
+		LANG.AddToLanguage("Deutsch", "target_" .. self.name, "Hitman")
+		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. self.name, [[Der Hitman ist ein Verräter (der mit den anderen Verräter-Rollen zusammenarbeitet) und dessen Ziel es ist, alle anderen Rollen (außer Verräter-Rollen) zu töten ^^
 Er kann nur Credits sammeln indem er sein Ziel tötet.]])
 	end
-end)
+end
 
 local h_TTT2CheckCreditAward = "TTT2HitmanSpecialCreditReward"
 local h_TTTCPostReceiveCustomClasses = "TTT2HitmanCanSeeClasses"
