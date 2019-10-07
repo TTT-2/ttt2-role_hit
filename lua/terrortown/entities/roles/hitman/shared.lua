@@ -66,43 +66,44 @@ end
 local h_TTT2CheckCreditAward = "TTT2HitmanSpecialCreditReward"
 local h_TTTCPostReceiveCustomClasses = "TTT2HitmanCanSeeClasses"
 
-hook.Add("TTT2ToggleRole", "TTT2ToggleHitmanHooks", function(roleData, state)
-	if roleData == HITMAN then
-		if state then
-			if SERVER then
-				hook.Add("TTT2CheckCreditAward", h_TTT2CheckCreditAward, function(victim, attacker)
-					if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActive() and attacker:GetSubRole() == ROLE_HITMAN then
-						return false -- prevent awards
-					end
-				end)
-
-				hook.Add("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses, function()
-					for _, hitman in ipairs(player.GetAll()) do
-						if hitman:IsActive() and hitman:GetSubRole() == ROLE_HITMAN then
-							for _, ply in ipairs(player.GetAll()) do
-								net.Start("TTT2HitmanSyncClasses")
-								net.WriteEntity(ply)
-								net.WriteUInt(ply:GetCustomClass() - 1, CLASS_BITS)
-								net.Send(hitman)
-							end
-						end
-					end
-				end)
-			end
-		else
-			if SERVER then
-				hook.Remove("TTT2CheckCreditAward", h_TTT2CheckCreditAward)
-				hook.Remove("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses)
-			end
+if SERVER then
+	local function SendClassesToHitman(hitman)
+		for _, ply in ipairs(player.GetAll()) do
+			net.Start("TTT2HitmanSyncClasses")
+			net.WriteEntity(ply)
+			net.WriteUInt(ply:GetCustomClass() or 0, CLASS_BITS)
+			net.Send(hitman)
 		end
 	end
-end)
 
-if CLIENT then
+	hook.Add("TTT2CheckCreditAward", h_TTT2CheckCreditAward, function(victim, attacker)
+		if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActive() and attacker:GetSubRole() == ROLE_HITMAN then
+			return false -- prevent awards
+		end
+	end)
+
+	hook.Add("TTT2UpdateSubrole", h_TTTCPostReceiveCustomClasses, function(hitman, oldRole, role)
+		if hitman:IsActive() and role == ROLE_HITMAN then
+			SendClassesToHitman(hitman)
+		end
+	end)
+
+	hook.Add("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses, function()
+		for _, hitman in ipairs(player.GetAll()) do
+			if hitman:IsActive() and hitman:GetSubRole() == ROLE_HITMAN then
+				SendClassesToHitman(hitman)
+			end
+		end
+	end)
+else
 	net.Receive("TTT2HitmanSyncClasses", function(len)
 		local target = net.ReadEntity()
-		local class = net.ReadUInt(CLASS_BITS) + 1
+		local class = net.ReadUInt(CLASS_BITS)
 
-		target:SetCustomClass(class)
+		if class == 0 then
+			class = nil
+		end
+
+		target:SetClass(class)
 	end)
 end
