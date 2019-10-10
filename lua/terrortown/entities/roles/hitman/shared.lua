@@ -69,10 +69,12 @@ local h_TTTCPostReceiveCustomClasses = "TTT2HitmanCanSeeClasses"
 if SERVER then
 	local function SendClassesToHitman(hitman)
 		for _, ply in ipairs(player.GetAll()) do
-			net.Start("TTT2HitmanSyncClasses")
-			net.WriteEntity(ply)
-			net.WriteUInt(ply:GetCustomClass() or 0, CLASS_BITS)
-			net.Send(hitman)
+			if ply ~= hitman then
+				net.Start("TTT2HitmanSyncClasses")
+				net.WriteEntity(ply)
+				net.WriteUInt(ply:GetCustomClass() or 0, CLASS_BITS)
+				net.Send(hitman)
+			end
 		end
 	end
 
