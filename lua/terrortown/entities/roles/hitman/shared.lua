@@ -67,7 +67,10 @@ local h_TTT2CheckCreditAward = "TTT2HitmanSpecialCreditReward"
 local h_TTTCPostReceiveCustomClasses = "TTT2HitmanCanSeeClasses"
 
 if SERVER then
+	-- TODO improve networking. If TTTC is disabled, this doesn't need to be handled
 	local function SendClassesToHitman(hitman)
+		if not TTTC then return end
+		
 		for _, ply in ipairs(player.GetAll()) do
 			if ply ~= hitman then
 				net.Start("TTT2HitmanSyncClasses")
@@ -85,12 +88,16 @@ if SERVER then
 	end)
 
 	hook.Add("TTT2UpdateSubrole", h_TTTCPostReceiveCustomClasses, function(hitman, oldRole, role)
+		if not TTTC then return end
+		
 		if hitman:IsActive() and role == ROLE_HITMAN then
 			SendClassesToHitman(hitman)
 		end
 	end)
 
 	hook.Add("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses, function()
+		if not TTTC then return end
+		
 		for _, hitman in ipairs(player.GetAll()) do
 			if hitman:IsActive() and hitman:GetSubRole() == ROLE_HITMAN then
 				SendClassesToHitman(hitman)
