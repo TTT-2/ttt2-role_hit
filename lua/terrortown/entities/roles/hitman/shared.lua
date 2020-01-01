@@ -8,9 +8,8 @@ if SERVER then
 end
 
 function ROLE:PreInitialize()
-	self.color = Color(240, 96, 72, 255) -- ...
-	self.dkcolor = Color(172, 35, 13, 255) -- ...
-	self.bgcolor = Color(53, 177, 90, 255) -- ...
+	self.color = Color(240, 96, 72, 255)
+
 	self.abbr = "hit" -- abbreviation
 	self.surviveBonus = 0.5 -- bonus multiplier for every survive while another player was killed
 	self.scoreKillsMultiplier = 5 -- multiplier for kill of player of another team
@@ -18,7 +17,7 @@ function ROLE:PreInitialize()
 	self.preventFindCredits = true
 	self.preventKillCredits = true
 	self.preventTraitorAloneCredits = true
-	
+
 	self.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
 	self.defaultTeam = TEAM_TRAITOR
 
@@ -36,29 +35,25 @@ end
 -- now link this subrole with its baserole
 function ROLE:Initialize()
 	roles.SetBaseRole(self, ROLE_TRAITOR)
-	
+
 	if CLIENT then
-		-- setup here is not necessary but if you want to access the role data, you need to start here
-		-- setup basic translation !
+		-- Role specific language elements
 		LANG.AddToLanguage("English", self.name, "Hitman")
 		LANG.AddToLanguage("English", "info_popup_" .. self.name, [[You are a Hitman!
 Try to get some credits!]])
 		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "This was a Hitman...")
 		LANG.AddToLanguage("English", "search_role_" .. self.abbr, "This person was a Hitman!")
 		LANG.AddToLanguage("English", "target_" .. self.name, "Hitman")
-		LANG.AddToLanguage("English", "ttt2_desc_" .. self.name, [[The Hitman is a Traitor (who works together with the other traitors) and the goal is to kill all other roles except the other traitor roles ^^
+		LANG.AddToLanguage("English", "ttt2_desc_" .. self.name, [[The Hitman is a Traitor working together with the other traitors with the goal to kill all other non-traitor players.
 The Hitman is just able to collect some credits if he kills his target.]])
 
-		---------------------------------
-
-		-- maybe this language as well...
 		LANG.AddToLanguage("Deutsch", self.name, "Hitman")
 		LANG.AddToLanguage("Deutsch", "info_popup_" .. self.name, [[Du bist ein Hitman!
 Versuche ein paar Credits zu bekommen!]])
 		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Hitman...")
 		LANG.AddToLanguage("Deutsch", "search_role_" .. self.abbr, "Diese Person war ein Hitman!")
 		LANG.AddToLanguage("Deutsch", "target_" .. self.name, "Hitman")
-		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. self.name, [[Der Hitman ist ein Verräter (der mit den anderen Verräter-Rollen zusammenarbeitet) und dessen Ziel es ist, alle anderen Rollen (außer Verräter-Rollen) zu töten ^^
+		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. self.name, [[Der Hitman ist ein Verräter, der mit den anderen Verräter-Rollen zusammenarbeitet und dessen Ziel es ist, alle anderen Rollen (außer Verräter-Rollen) zu töten.
 Er kann nur Credits sammeln indem er sein Ziel tötet.]])
 	end
 end
@@ -70,7 +65,7 @@ if SERVER then
 	-- TODO improve networking. If TTTC is disabled, this doesn't need to be handled
 	local function SendClassesToHitman(hitman)
 		if not TTTC then return end
-		
+
 		for _, ply in ipairs(player.GetAll()) do
 			if ply ~= hitman then
 				net.Start("TTT2HitmanSyncClasses")
@@ -89,7 +84,7 @@ if SERVER then
 
 	hook.Add("TTT2UpdateSubrole", h_TTTCPostReceiveCustomClasses, function(hitman, oldRole, role)
 		if not TTTC then return end
-		
+
 		if hitman:IsActive() and role == ROLE_HITMAN then
 			SendClassesToHitman(hitman)
 		end
@@ -97,14 +92,16 @@ if SERVER then
 
 	hook.Add("TTTCPostReceiveCustomClasses", h_TTTCPostReceiveCustomClasses, function()
 		if not TTTC then return end
-		
+
 		for _, hitman in ipairs(player.GetAll()) do
 			if hitman:IsActive() and hitman:GetSubRole() == ROLE_HITMAN then
 				SendClassesToHitman(hitman)
 			end
 		end
 	end)
-else
+end
+
+if CLIENT then
 	net.Receive("TTT2HitmanSyncClasses", function(len)
 		local target = net.ReadEntity()
 		local class = net.ReadUInt(CLASS_BITS)
