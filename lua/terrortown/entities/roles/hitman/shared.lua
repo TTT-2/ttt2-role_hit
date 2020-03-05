@@ -36,27 +36,6 @@ end
 -- now link this subrole with its baserole
 function ROLE:Initialize()
 	roles.SetBaseRole(self, ROLE_TRAITOR)
-
-	if CLIENT then
-		-- Role specific language elements
-		LANG.AddToLanguage("English", self.name, "Hitman")
-		LANG.AddToLanguage("English", "info_popup_" .. self.name, [[You are a Hitman!
-Try to get some credits!]])
-		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "This was a Hitman...")
-		LANG.AddToLanguage("English", "search_role_" .. self.abbr, "This person was a Hitman!")
-		LANG.AddToLanguage("English", "target_" .. self.name, "Hitman")
-		LANG.AddToLanguage("English", "ttt2_desc_" .. self.name, [[The Hitman is a Traitor working together with the other traitors with the goal to kill all other non-traitor players.
-The Hitman is just able to collect some credits if he kills his target.]])
-
-		LANG.AddToLanguage("Deutsch", self.name, "Hitman")
-		LANG.AddToLanguage("Deutsch", "info_popup_" .. self.name, [[Du bist ein Hitman!
-Versuche ein paar Credits zu bekommen!]])
-		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Hitman...")
-		LANG.AddToLanguage("Deutsch", "search_role_" .. self.abbr, "Diese Person war ein Hitman!")
-		LANG.AddToLanguage("Deutsch", "target_" .. self.name, "Hitman")
-		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. self.name, [[Der Hitman ist ein Verräter, der mit den anderen Verräter-Rollen zusammenarbeitet und dessen Ziel es ist, alle anderen Rollen (außer Verräter-Rollen) zu töten.
-Er kann nur Credits sammeln indem er sein Ziel tötet.]])
-	end
 end
 
 local h_TTT2CheckCreditAward = "TTT2HitmanSpecialCreditReward"
