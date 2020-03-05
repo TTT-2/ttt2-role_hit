@@ -1,7 +1,3 @@
--- convars
-local creditsBonus = CreateConVar("ttt2_hitman_target_credit_bonus", "1", FCVAR_SERVER_CAN_EXECUTE, "The credit bonus given when a Traitor kills his target. (Def: 2)")
-local chatReveal = CreateConVar("ttt2_hitman_target_chatreveal", "0", FCVAR_SERVER_CAN_EXECUTE, "Enables or disables if the Traitor should be revealed if he killed nontarget (Def: 0)")
-
 -- select Targets
 local function GetTargets(ply)
 	local targets = {}
@@ -52,7 +48,7 @@ local function HitmanTargetDied(ply)
 
 	if IsValid(attacker) and attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and attacker:GetTargetPlayer() then
 		if attacker:GetTargetPlayer() == ply then -- if attacker's target is the dead player
-			local val = creditsBonus:GetInt()
+			local val = GetConVar("ttt2_hitman_target_credit_bonus"):GetInt()
 			local text = ""
 
 			if val > 0 and attacker:IsActive() then
@@ -66,7 +62,7 @@ local function HitmanTargetDied(ply)
 			attacker:ChatPrint(text)
 
 			SelectNewTarget(attacker)
-		elseif chatReveal:GetBool() and attacker ~= ply then -- Reveal Sidekick
+		elseif GetConVar("ttt2_hitman_target_chatreveal"):GetBool() and attacker ~= ply then -- Reveal Sidekick
 			local text = attacker:Nick() .. " is a " .. string.upper(attacker:GetSubRoleData().name) .. "!"
 
 			for _, pl in ipairs(player.GetAll()) do
