@@ -49,25 +49,18 @@ local function HitmanTargetDied(ply)
 	if IsValid(attacker) and attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and attacker:GetTargetPlayer() then
 		if attacker:GetTargetPlayer() == ply then -- if attacker's target is the dead player
 			local val = GetConVar("ttt2_hitman_target_credit_bonus"):GetInt()
-			local text = ""
 
 			if val > 0 and attacker:IsActive() then
 				attacker:AddCredits(val)
 
-				text = "You received " .. val .. " credit(s) for eleminating your target."
+				LANG.Msg(attacker, "ttt2_hitman_target_killed_credits", {amount = val}, MSG_MSTACK_ROLE)
 			else
-				text = "You've killed your target!"
+				LANG.Msg(attacker, "ttt2_hitman_target_killed", nil, MSG_MSTACK_ROLE)
 			end
-
-			attacker:ChatPrint(text)
 
 			SelectNewTarget(attacker)
-		elseif GetConVar("ttt2_hitman_target_chatreveal"):GetBool() and attacker ~= ply then -- Reveal Sidekick
-			local text = attacker:Nick() .. " is a " .. string.upper(attacker:GetSubRoleData().name) .. "!"
-
-			for _, pl in ipairs(player.GetAll()) do
-				pl:ChatPrint(text)
-			end
+		elseif GetConVar("ttt2_hitman_target_chatreveal"):GetBool() and attacker ~= ply then -- Reveal Hitman
+			LANG.MsgAll("ttt2_hitman_chat_reveal", {playername = attacker:Nick()}, MSG_MSTACK_WARN)
 		end
 	end
 
@@ -75,7 +68,7 @@ local function HitmanTargetDied(ply)
 		local target = pl:GetTargetPlayer()
 
 		if (not IsValid(attacker) or pl ~= attacker) and (not pl.IsGhost or not pl:IsGhost()) and target == ply and pl:GetSubRole() == ROLE_HITMAN then
-			pl:ChatPrint("Your target died...") -- info Textmessage
+			LANG.Msg(pl, "ttt2_hitman_target_died", nil, MSG_MSTACK_PLAIN)
 
 			SelectNewTarget(pl)
 		end
