@@ -11,11 +11,7 @@ L["ttt2_desc_" .. HITMAN.name] = [[Il Sicario è un Traditore che lavora insieme
 Il Sicario può raccogliere crediti solo se uccide il suo bersaglio.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
-if amount == 1 then
-	L["ttt2_hitman_target_killed_credits"] = "Hai ricevuto {amount} credito per aver ucciso il tuo bersaglio."
-else
-	L["ttt2_hitman_target_killed_credits"] = "Hai ricevuto {amount} crediti per aver ucciso il tuo bersaglio."
-end
+L["ttt2_hitman_target_killed_credits"] = "Hai ricevuto {amount} credito/i per aver ucciso il tuo bersaglio."
 L["ttt2_hitman_target_killed"] = "Hai ucciso il tuo bersaglio!"
 L["ttt2_hitman_chat_reveal"] = "'{playername}' è un Sicario!"
 L["ttt2_hitman_target_died"] = "Il tuo bersaglio è morto..."
