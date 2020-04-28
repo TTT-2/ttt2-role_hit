@@ -8,7 +8,7 @@ local function GetTargets(ply)
 	end
 
 	for _, pl in ipairs(player.GetAll()) do
-		if pl:Alive() and pl:IsActive() and not pl:IsInTeam(ply) and (not pl.IsGhost or not pl:IsGhost()) and (not JESTER or not pl:IsRole(ROLE_JESTER)) then
+		if pl:Alive() and pl:IsActive() and not pl:IsInTeam(ply) and (not pl.IsGhost or not pl:IsGhost()) and (not JESTER or not pl:IsRole(ROLE_JESTER)) and (not SPY or not pl:IsRole(ROLE_SPY)) then
 			if pl:IsRole(ROLE_DETECTIVE) then
 				detes[#detes + 1] = pl
 			else
