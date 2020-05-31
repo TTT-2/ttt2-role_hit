@@ -14,4 +14,5 @@ Er kann nur Credits sammeln indem er sein Ziel tötet.]]
 L["ttt2_hitman_target_killed_credits"] = "Du hast {amount} Aursüstungspunkt(e) für das Töten deines Zieles erhalten."
 L["ttt2_hitman_target_killed"] = "Du hast dein Ziel getötet!"
 L["ttt2_hitman_chat_reveal"] = "'{playername}' ist ein Auftragsmörder!"
-L["ttt2_hitman_target_died"] = "YDein Ziel ist gestorben ..."
+L["ttt2_hitman_target_died"] = "Dein Ziel ist gestorben ..."
+L["info_popup_hitman_alone"] = "Du bist alleine"
