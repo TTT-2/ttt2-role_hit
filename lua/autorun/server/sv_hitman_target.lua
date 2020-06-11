@@ -6,16 +6,29 @@ local function GetTargets(ply)
 	if not IsValid(ply) or not ply:IsActive() or not ply:Alive() or ply.IsGhost and ply:IsGhost() or ply:GetSubRole() ~= ROLE_HITMAN then
 		return targets
 	end
-
+	
+		
+		
 	for _, pl in ipairs(player.GetAll()) do
-		if pl:Alive() and pl:IsActive() and not pl:IsInTeam(ply) and (not pl.IsGhost or not pl:IsGhost()) and (not JESTER or not pl:IsRole(ROLE_JESTER)) and (not SPY or not pl:IsRole(ROLE_SPY)) then
-			if pl:IsRole(ROLE_DETECTIVE) then
-				detes[#detes + 1] = pl
-			else
-				targets[#targets + 1] = pl
+		if not GetConVar("ttt2_hitman_target_can_be_spy"):GetBool() then
+			if pl:Alive() and pl:IsActive() and not pl:IsInTeam(ply) and (not pl.IsGhost or not pl:IsGhost()) and (not JESTER or not pl:IsRole(ROLE_JESTER)) and (not SPY or not pl:IsRole(ROLE_SPY)) then
+				if pl:IsRole(ROLE_DETECTIVE) then
+					detes[#detes + 1] = pl
+				else
+					targets[#targets + 1] = pl
+				end
+			end
+		elseif GetConVar("ttt2_hitman_target_can_be_spy"):GetBool() then
+			if pl:Alive() and pl:IsActive() and not pl:IsInTeam(ply) and (not pl.IsGhost or not pl:IsGhost()) and (not JESTER or not pl:IsRole(ROLE_JESTER)) then
+				if pl:IsRole(ROLE_DETECTIVE) then
+					detes[#detes + 1] = pl
+				else
+					targets[#targets + 1] = pl
+				end
 			end
 		end
 	end
+
 
 	if #targets < 1 then
 		targets = detes
