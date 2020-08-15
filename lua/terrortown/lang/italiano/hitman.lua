@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("italiano")
+local L = LANG.GetLanguageTableReference("italiano")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[HITMAN.name] = "Hitman"
@@ -8,6 +8,7 @@ L["body_found_" .. HITMAN.abbr] = "Era un Hitman!"
 L["search_role_" .. HITMAN.abbr] = "Questa persona era un Hitman!"
 L["target_" .. HITMAN.name] = "Hitman"
 L["ttt2_desc_" .. HITMAN.name] = [[L'Hitman è un Traditore che collabora con gli altri Traditori con l'obiettivo di uccidere tutti i giocatori che non fanno parte del team.
+
 L'Hitman può prendere crediti solo se uccide il suo bersaglio.]]
 
 -- OTHER ROLE LANGUAGE STRINGS

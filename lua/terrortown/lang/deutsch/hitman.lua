@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("deutsch")
+local L = LANG.GetLanguageTableReference("deutsch")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[HITMAN.name] = "Auftragsmörder"
@@ -8,6 +8,7 @@ L["body_found_" .. HITMAN.abbr] = "Er war ein Auftragsmörder..."
 L["search_role_" .. HITMAN.abbr] = "Diese Person war ein Auftragsmörder!"
 L["target_" .. HITMAN.name] = "Auftragsmörder"
 L["ttt2_desc_" .. HITMAN.name] = [[Der Auftragsmörder ist ein Verräter, der mit den anderen Verräter-Rollen zusammenarbeitet und dessen Ziel es ist, alle anderen Rollen (außer Verräter-Rollen) zu töten.
+
 Er kann nur Credits sammeln indem er sein Ziel tötet.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
