@@ -12,7 +12,7 @@ L["ttt2_desc_" .. HITMAN.name] = [[The Hitman is a Traitor working together with
 The Hitman is just able to collect some credits if he kills his target.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
-L["ttt2_hitman_target_killed_credits"] = "You received {amount} credit(s) for eleminating your target."
+L["ttt2_hitman_target_killed_credits"] = "You received {amount} credit(s) for eliminating your target."
 L["ttt2_hitman_target_killed"] = "You've killed your target!"
 L["ttt2_hitman_chat_reveal"] = "'{playername}' is a Hitman!"
 L["ttt2_hitman_target_died"] = "Your target died..."
