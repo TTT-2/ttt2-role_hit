@@ -34,19 +34,12 @@ local function SelectNewTarget(ply)
 	end
 end
 
-local function HitmanTargetChanged(ply, _, attacker)
-	ply.targetAttacker = nil
+local function HitmanTargetDied(ply, attacker, dmgInfo)
+	if GetRoundState() ~= ROUND_ACTIVE or not IsValid(attacker) or not attacker:IsPlayer() then return end
 
-	if GetRoundState() == ROUND_ACTIVE and IsValid(attacker) and attacker:IsPlayer() and (not attacker.IsGhost or not attacker:IsGhost()) then
-		ply.targetAttacker = attacker
-	end
-end
-hook.Add("PlayerDeath", "HitmanTargetChanged", HitmanTargetChanged)
+	if attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and attacker:GetTargetPlayer() then
+		events.Trigger(EVENT_TARGET_KILL, ply, attacker, dmgInfo, attacker:GetTargetPlayer() == ply)
 
-local function HitmanTargetDied(ply)
-	local attacker = ply.targetAttacker
-
-	if IsValid(attacker) and attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and attacker:GetTargetPlayer() then
 		if attacker:GetTargetPlayer() == ply then -- if attacker's target is the dead player
 			local val = GetConVar("ttt2_hitman_target_credit_bonus"):GetInt()
 
@@ -74,7 +67,7 @@ local function HitmanTargetDied(ply)
 		end
 	end
 end
-hook.Add("PostPlayerDeath", "HitmanTargetDied", HitmanTargetDied)
+hook.Add("DoPlayerDeath", "HitmanTargetDied", HitmanTargetDied)
 
 local function HitmanTargetSpawned(ply)
 	if GetRoundState() == ROUND_ACTIVE then

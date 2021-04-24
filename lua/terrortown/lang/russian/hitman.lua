@@ -16,3 +16,12 @@ L["ttt2_hitman_target_killed_credits"] = "Вы получили {amount} кре�
 L["ttt2_hitman_target_killed"] = "Вы убили свою цель!"
 L["ttt2_hitman_chat_reveal"] = "'{playername}' хитмэн!"
 L["ttt2_hitman_target_died"] = "Ваша цель умерла..."
+
+--L["tooltip_target_kill_score"] = "Kill: {score}"
+--L["target_kill_score"] = "Kill:"
+--L["tooltip_target_kill_score_hit_right"] = "Correct target: {score}"
+--L["tooltip_target_kill_score_hit_wrong"] = "Wrong target: {score}"
+--L["target_kill_score_hit_right"] = "Correct target:"
+--L["target_kill_score_hit_wrong"] = "Wrong target:"
+--L["desc_target_kill_hit_right"] = "They were killed by a hitman. It was the correct target."
+--L["desc_target_kill_hit_wrong"] = "They were killed by a hitman. It was the wrong target."
