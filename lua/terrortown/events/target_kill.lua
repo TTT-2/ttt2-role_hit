@@ -39,7 +39,7 @@ if SERVER then
 		-- modify score reference
 		if self.wasTarget then
 			score.score_hit_right = GetConVar("ttt2_hitman_target_right_score_bonus"):GetInt()
-		else
+		else if sellf.event.type ~= KILL_SUICIDE then
 			score.score_hit_wrong = -1 * GetConVar("ttt2_hitman_target_wrong_score_penalty"):GetInt()
 		end
 
