@@ -30,3 +30,8 @@ L["target_kill_score_hit_right"] = "Richtiges Ziel:"
 L["target_kill_score_hit_wrong"] = "Falsches Ziel:"
 L["desc_target_kill_hit_right"] = "Er wurde von einem Auftragsmörder umgebracht. Es war das richtige Ziel."
 L["desc_target_kill_hit_wrong"] = "Er wurde von einem Auftragsmörder umgebracht. Es war das falsche Ziel."
+
+L["label_hitman_target_credit_bonus"] = "Belohnung für getötetes Ziel"
+L["label_hitman_target_chatreveal"] = "Veröffentliche Rolle, wenn falsche Spieler getötet wurde"
+L["label_hitman_target_right_score_bonus"] = "Punktebonus für Auftragsmord"
+L["label_hitman_target_wrong_score_penalty"] = "Punkestrafe für falschen Mord"

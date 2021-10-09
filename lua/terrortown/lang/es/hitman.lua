@@ -29,3 +29,8 @@ L["ttt2_hitman_target_died"] = "Tu objetivo murió..."
 --L["target_kill_score_hit_wrong"] = "Wrong target:"
 --L["desc_target_kill_hit_right"] = "They were killed by a hitman. It was the correct target."
 --L["desc_target_kill_hit_wrong"] = "They were killed by a hitman. It was the wrong target."
+
+--L["label_hitman_target_credit_bonus"] = "Credit reward for killed target"
+--L["label_hitman_target_chatreveal"] = "Reveal role if wrong player was killed"
+--L["label_hitman_target_right_score_bonus"] = "Score bonus for target kill"
+--L["label_hitman_target_wrong_score_penalty"] = "Score penalty for non-target kill"

@@ -1,3 +1,8 @@
+CreateConVar("ttt2_hitman_target_credit_bonus", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_hitman_target_chatreveal", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_hitman_target_right_score_bonus", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_hitman_target_wrong_score_penalty", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+
 -- select Targets
 local function GetTargets(ply)
 	local targets = {}

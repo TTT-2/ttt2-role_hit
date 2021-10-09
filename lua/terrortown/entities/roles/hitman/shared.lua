@@ -84,6 +84,41 @@ if SERVER then
 end
 
 if CLIENT then
+	function ROLE:AddToSettingsMenu(parent)
+		local form = vgui.CreateTTT2Form(parent, "header_roles_additional")
+
+		form:MakeCheckBox({
+			serverConvar = "ttt2_hitman_target_chatreveal",
+			label = "label_hitman_target_chatreveal"
+		})
+
+		form:MakeSlider({
+			serverConvar = "ttt2_hitman_target_right_score_bonus",
+			label = "label_hitman_target_right_score_bonus",
+			min = 0,
+			max = 10,
+			decimal = 0
+		})
+
+		form:MakeSlider({
+			serverConvar = "ttt2_hitman_target_wrong_score_penalty",
+			label = "label_hitman_target_wrong_score_penalty",
+			min = 0,
+			max = 10,
+			decimal = 0
+		})
+	end
+
+	function ROLE:AddToSettingsMenuCreditsForm(parent)
+		parent:MakeSlider({
+			serverConvar = "ttt2_hitman_target_credit_bonus",
+			label = "label_hitman_target_credit_bonus",
+			min = 0,
+			max = 10,
+			decimal = 0
+		})
+	end
+
 	net.Receive("TTT2HitmanSyncClasses", function(len)
 		local target = net.ReadEntity()
 		local class = net.ReadUInt(CLASS_BITS)
