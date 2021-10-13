@@ -16,9 +16,8 @@ function ROLE:PreInitialize()
 	self.score.killsMultiplier = 2
 	self.score.teamKillsMultiplier = -16
 	self.score.bodyFoundMuliplier = 0
+
 	self.preventFindCredits = true
-	self.preventKillCredits = true
-	self.preventTraitorAloneCredits = true
 
 	self.defaultEquipment = SPECIAL_EQUIPMENT
 	self.defaultTeam = TEAM_TRAITOR
@@ -27,10 +26,12 @@ function ROLE:PreInitialize()
 		pct = 0.17,
 		maximum = 1,
 		minPlayers = 6,
-		credits = 0,
-		togglable = true,
 		random = 50,
 		traitorButton = 1,
+		togglable = true,
+		credits = 0,
+		creditsAwardDeadEnable = 0,
+		creditsAwardKillEnable = 0,
 		shopFallback = SHOP_FALLBACK_TRAITOR
 	}
 end
