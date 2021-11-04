@@ -7,9 +7,9 @@ Try to get some credits!]]
 L["body_found_" .. HITMAN.abbr] = "They were a Hitman!"
 L["search_role_" .. HITMAN.abbr] = "This person was a Hitman!"
 L["target_" .. HITMAN.name] = "Hitman"
-L["ttt2_desc_" .. HITMAN.name] = [[The Hitman is a Traitor working together with the other traitors with the goal to kill all other non-traitor players.
+L["ttt2_desc_" .. HITMAN.name] = [[The Hitman is a Traitor working together with the other traitors with the goal of killing all other non-traitor players.
 
-The Hitman is just able to collect some credits if he kills his target.]]
+The Hitman is only able to collect credits if he kills his target.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
 L["ttt2_hitman_target_killed_credits"] = "You received {amount} credit(s) for eliminating your target."
