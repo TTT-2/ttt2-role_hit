@@ -16,6 +16,7 @@ L["ttt2_hitman_target_killed_credits"] = "Has recibido {amount} crédito(s) por 
 L["ttt2_hitman_target_killed"] = "¡Has asesinado a tu objetivo!"
 L["ttt2_hitman_chat_reveal"] = "¡'{playername}' es un Asesino!"
 L["ttt2_hitman_target_died"] = "Tu objetivo murió..."
+--L["ttt2_hitman_target_unavailable"] = "No targetable player available."
 
 --L["tooltip_target_kill_score"] = "Kill: {score}"
 --L["target_kill_score"] = "Kill:"

@@ -3,49 +3,80 @@ CreateConVar("ttt2_hitman_target_chatreveal", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 CreateConVar("ttt2_hitman_target_right_score_bonus", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 CreateConVar("ttt2_hitman_target_wrong_score_penalty", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
--- select Targets
-local function GetTargets(ply)
-	local targets = {}
-	local detes = {}
+local function CanBeTarget(ply, target, blacklisted)
+	return target:IsActive()
+		and not target:IsInTeam(ply)
+		and not (target.IsGhost and target:IsGhost())
+		and target ~= blacklisted
+		and hook.Run("TTT2CanBeHitmanTarget", ply, target) ~= false
+end
 
-	if not IsValid(ply) or not ply:IsActive() or not ply:Alive() or ply.IsGhost and ply:IsGhost() or ply:GetSubRole() ~= ROLE_HITMAN then
+local function GetTargets(ply, blacklisted)
+	local targets = {}
+	local policingRoles = {}
+
+	if not IsValid(ply)
+		or not ply:IsActive()
+		or (ply.IsGhost and ply:IsGhost())
+		or ply:GetSubRole() ~= ROLE_HITMAN
+	then
 		return targets
 	end
 
-	for _, pl in ipairs(player.GetAll()) do
-		if pl:Alive() and pl:IsActive() and not pl:IsInTeam(ply) and (not pl.IsGhost or not pl:IsGhost()) and (not JESTER or not pl:IsRole(ROLE_JESTER)) then
-			if pl:IsRole(ROLE_DETECTIVE) then
-				detes[#detes + 1] = pl
-			else
-				targets[#targets + 1] = pl
-			end
+	local plys = player.GetAll()
+
+	for i = 1, #plys do
+		local p = plys[i]
+
+		if not CanBeTarget(ply, p, blacklisted) then continue end
+
+		local pRoleData = p:GetSubRoleData()
+
+		if pRoleData.isPolicingRole and pRoleData.isPublicRole then
+			policingRoles[#policingRoles + 1] = p
+		else
+			targets[#targets + 1] = p
 		end
 	end
 
 	if #targets < 1 then
-		targets = detes
+		targets = policingRoles
 	end
 
 	return targets
 end
 
-local function SelectNewTarget(ply)
-	local targets = GetTargets(ply)
+local function SelectNewTarget(ply, blacklisted)
+	local targets = GetTargets(ply, blacklisted)
+
+	print("targets:")
+	PrintTable(targets)
 
 	if #targets > 0 then
 		ply:SetTargetPlayer(targets[math.random(1, #targets)])
 	else
 		ply:SetTargetPlayer(nil)
+
+		LANG.Msg(ply, "ttt2_hitman_target_unavailable", nil, MSG_MSTACK_PLAIN)
 	end
 end
 
 local function HitmanTargetDied(ply, attacker, dmgInfo)
-	if GetRoundState() ~= ROUND_ACTIVE or not IsValid(attacker) or not attacker:IsPlayer() then return end
+	if GetRoundState() ~= ROUND_ACTIVE then return end
 
-	if attacker:GetSubRole() == ROLE_HITMAN and (not attacker.IsGhost or not attacker:IsGhost()) and attacker:GetTargetPlayer() then
+	local wasTargetKill = false
+
+	if IsValid(attacker)
+		and attacker:IsPlayer()
+		and attacker:GetSubRole() == ROLE_HITMAN
+		and attacker:GetTargetPlayer()
+		and (not attacker.IsGhost or not attacker:IsGhost())
+	then
 		events.Trigger(EVENT_TARGET_KILL, ply, attacker, dmgInfo, attacker:GetTargetPlayer() == ply)
 
 		if attacker:GetTargetPlayer() == ply then -- if attacker's target is the dead player
+			wasTargetKill = true
+
 			local val = GetConVar("ttt2_hitman_target_credit_bonus"):GetInt()
 
 			if val > 0 and attacker:IsActive() then
@@ -55,75 +86,116 @@ local function HitmanTargetDied(ply, attacker, dmgInfo)
 			else
 				LANG.Msg(attacker, "ttt2_hitman_target_killed", nil, MSG_MSTACK_ROLE)
 			end
-
-			SelectNewTarget(attacker)
 		elseif GetConVar("ttt2_hitman_target_chatreveal"):GetBool() and attacker ~= ply then -- Reveal Hitman
 			LANG.MsgAll("ttt2_hitman_chat_reveal", {playername = attacker:Nick()}, MSG_MSTACK_WARN)
 		end
 	end
 
-	for _, pl in ipairs(player.GetAll()) do
-		local target = pl:GetTargetPlayer()
+	local plys = player.GetAll()
 
-		if (not IsValid(attacker) or pl ~= attacker) and (not pl.IsGhost or not pl:IsGhost()) and target == ply and pl:GetSubRole() == ROLE_HITMAN then
-			LANG.Msg(pl, "ttt2_hitman_target_died", nil, MSG_MSTACK_PLAIN)
+	for i = 1, #plys do
+		local plyHitman = plys[i]
 
-			SelectNewTarget(pl)
+		if plyHitman:GetSubRole() ~= ROLE_HITMAN
+			or (plyHitman.IsGhost and plyHitman:IsGhost())
+		then continue end
+
+		local target = plyHitman:GetTargetPlayer()
+
+		if IsValid(target)
+			and (not target:IsActive()
+				or target == ply
+				or (target.IsGhost and target:IsGhost())
+			)
+		then
+			if not wasTargetKill then
+				LANG.Msg(plyHitman, "ttt2_hitman_target_died", nil, MSG_MSTACK_PLAIN)
+			end
+
+			SelectNewTarget(plyHitman, ply)
 		end
 	end
 end
 hook.Add("DoPlayerDeath", "HitmanTargetDied", HitmanTargetDied)
 
+-- select a new target if the hitman has no target and a player respawned
 local function HitmanTargetSpawned(ply)
-	if GetRoundState() == ROUND_ACTIVE then
-		for _, v in ipairs(player.GetAll()) do
-			local target = v:GetTargetPlayer()
+	if GetRoundState() ~= ROUND_ACTIVE then return end
 
-			if ply ~= v and v:IsActive() and v:Alive() and v:GetSubRole() == ROLE_HITMAN and (not IsValid(target) or not target:Alive() or not target:IsActive()) then
-				SelectNewTarget(v)
-			end
-		end
+	local plys = player.GetAll()
 
-		local target = ply:GetTargetPlayer()
+	for i = 1, #plys do
+		local plyHitman = plys[i]
 
-		if ply:GetSubRole() == ROLE_HITMAN and (not IsValid(target) or not target:Alive() or not target:IsActive()) then
-			SelectNewTarget(ply)
-		end
+		if plyHitman:GetSubRole() ~= ROLE_HITMAN
+			or (plyHitman.IsGhost and plyHitman:IsGhost())
+			or IsValid(plyHitman:GetTargetPlayer())
+		then continue end
+
+		SelectNewTarget(plyHitman)
 	end
 end
 hook.Add("PlayerSpawn", "HitmanTargetSpawned", HitmanTargetSpawned)
 
 local function HitmanTargetDisconnected(ply)
-	for _, v in ipairs(player.GetAll()) do
-		if v:GetSubRole() == ROLE_HITMAN and v:GetTargetPlayer() == ply then
-			SelectNewTarget(v)
-		end
+	if GetRoundState() ~= ROUND_ACTIVE then return end
+
+	local plys = player.GetAll()
+
+	for i = 1, #plys do
+		local plyHitman = plys[i]
+
+		if plyHitman:GetSubRole() ~= ROLE_HITMAN
+			or (plyHitman.IsGhost and plyHitman:IsGhost())
+			or plyHitman:GetTargetPlayer() ~= ply
+		then continue end
+
+		SelectNewTarget(plyHitman, ply)
 	end
 end
 hook.Add("PlayerDisconnected", "HitmanTargetDisconnected", HitmanTargetDisconnected)
 
 local function HitmanTargetRoleChanged(ply, old, new)
+	if GetRoundState() ~= ROUND_ACTIVE then return end
+
+	-- handle target of the role itself
 	if new == ROLE_HITMAN then
 		SelectNewTarget(ply)
 	elseif old == ROLE_HITMAN then
 		ply:SetTargetPlayer(nil)
 	end
 
-	if GetRoundState() == ROUND_ACTIVE then
-		for _, v in ipairs(player.GetAll()) do
-			if v:GetSubRole() == ROLE_HITMAN and v:GetTargetPlayer() == ply and v:IsInTeam(ply) then
-				SelectNewTarget(v)
-			end
-		end
+	-- handle role changes of the target
+	local plys = player.GetAll()
+
+	for i = 1, #plys do
+		local plyHitman = plys[i]
+
+		if plyHitman:GetSubRole() ~= ROLE_HITMAN
+			or (plyHitman.IsGhost and plyHitman:IsGhost())
+			or CanBeTarget(plyHitman, ply)
+		then continue end
+
+		SelectNewTarget(plyHitman)
 	end
 end
 hook.Add("TTT2UpdateSubrole", "HitmanTargetRoleChanged", HitmanTargetRoleChanged)
 
 local function HitmanGotSelected()
-	for _, ply in ipairs(player.GetAll()) do
-		if ply:GetSubRole() == ROLE_HITMAN then
-			SelectNewTarget(ply)
-		end
+	local plys = player.GetAll()
+
+	print("selecting at round begin")
+
+	for i = 1, #plys do
+		local plyHitman = plys[i]
+
+		if plyHitman:GetSubRole() ~= ROLE_HITMAN
+			or (plyHitman.IsGhost and plyHitman:IsGhost())
+		then continue end
+
+		print("is hitman", plyHitman)
+
+		SelectNewTarget(plyHitman)
 	end
 end
 hook.Add("TTTBeginRound", "HitmanGotSelected", HitmanGotSelected)

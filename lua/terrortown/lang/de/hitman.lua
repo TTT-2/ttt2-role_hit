@@ -16,7 +16,7 @@ L["ttt2_hitman_target_killed_credits"] = "Du hast {amount} Aursüstungspunkt(e) 
 L["ttt2_hitman_target_killed"] = "Du hast dein Ziel getötet!"
 L["ttt2_hitman_chat_reveal"] = "'{playername}' ist ein Auftragsmörder!"
 L["ttt2_hitman_target_died"] = "Dein Ziel ist gestorben ..."
-L["info_popup_hitman_alone"] = "Du bist alleine"
+L["ttt2_hitman_target_unavailable"] = "Kein Auftragsspieler verfügbar."
 
 L["tooltip_target_kill_score"] = "Mord: {score}"
 L["target_kill_score"] = "Mord:"
