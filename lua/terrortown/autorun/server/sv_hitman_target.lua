@@ -49,9 +49,6 @@ end
 local function SelectNewTarget(ply, blacklisted)
 	local targets = GetTargets(ply, blacklisted)
 
-	print("targets:")
-	PrintTable(targets)
-
 	if #targets > 0 then
 		ply:SetTargetPlayer(targets[math.random(1, #targets)])
 	else
@@ -184,16 +181,12 @@ hook.Add("TTT2UpdateSubrole", "HitmanTargetRoleChanged", HitmanTargetRoleChanged
 local function HitmanGotSelected()
 	local plys = player.GetAll()
 
-	print("selecting at round begin")
-
 	for i = 1, #plys do
 		local plyHitman = plys[i]
 
 		if plyHitman:GetSubRole() ~= ROLE_HITMAN
 			or (plyHitman.IsGhost and plyHitman:IsGhost())
 		then continue end
-
-		print("is hitman", plyHitman)
 
 		SelectNewTarget(plyHitman)
 	end
